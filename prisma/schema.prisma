@@ -1,0 +1,231 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Enum for user roles
+enum Role {
+  ADMIN
+  PHOTOGRAPHER
+  CUSTOMER
+}
+
+// Enum for photographer grades
+enum Grade {
+  A
+  B
+  C
+  D
+  E
+}
+
+// Enum for booking status
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+// Enum for profile status
+enum ProfileStatus {
+  DRAFT
+  PUBLISHED
+}
+
+// Enum for notification types
+enum NotificationType {
+  EMAIL
+  SMS
+  IN_APP
+}
+
+// Enum for notification status
+enum NotificationStatus {
+  UNREAD
+  READ
+  SENT
+}
+
+// Main user table
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  role          Role           @default(CUSTOMER)
+  name          String
+  phoneNumber   String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  photographer   Photographer?
+  bookings       Booking[]
+  notifications  Notification[]
+}
+
+// Photographer profile
+model Photographer {
+  id              String         @id @default(uuid())
+  userId          String         @unique
+  user            User           @relation(fields: [userId], references: [id])
+  grade           Grade
+  bio             String?
+  profilePic      String?
+  instagram       String?
+  bankName        String?
+  bankAccount     String?
+  accountHolder   String?
+  hourlyRate      Float
+  dailyRate       Float
+  status          ProfileStatus  @default(DRAFT)
+  portfolios      Portfolio[]
+  availabilities  Availability[]
+  bookingItems    BookingItem[]
+  bookings        BookingPhotographer[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+// Portfolio items (photos/videos)
+model Portfolio {
+  id             String    @id @default(uuid())
+  photographerId String
+  photographer   Photographer @relation(fields: [photographerId], references: [id])
+  url            String
+  title          String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+// Availability calendar
+model Availability {
+  id             String    @id @default(uuid())
+  photographerId String
+  photographer   Photographer @relation(fields: [photographerId], references: [id])
+  date           DateTime
+  isBooked       Boolean    @default(false)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@unique([photographerId, date])
+}
+
+// Location master data
+model Location {
+  id        String    @id @default(uuid())
+  name      String
+  type      String    // 'city' or 'country'
+  parentId  String?
+  parent    Location? @relation("LocationRelation", fields: [parentId], references: [id])
+  children  Location[] @relation("LocationRelation")
+  bookings  Booking[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+// Equipment for rental
+model Equipment {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  dailyRate   Float
+  quantity    Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  bookingItems BookingItem[]
+}
+
+// Transport options
+model Transport {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  dailyRate   Float
+  quantity    Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  bookingItems BookingItem[]
+}
+
+// Main booking table
+model Booking {
+  id              String         @id @default(uuid())
+  customerId      String
+  customer        User           @relation(fields: [customerId], references: [id])
+  locationId      String
+  location        Location       @relation(fields: [locationId], references: [id])
+  eventDate       DateTime
+  status          BookingStatus  @default(PENDING)
+  totalPrice      Float
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  bookingItems    BookingItem[]
+  photographers   BookingPhotographer[]
+  replacement     Replacement[]
+}
+
+// Junction table for Booking-Photographer relationship
+model BookingPhotographer {
+  id           String       @id @default(uuid())
+  bookingId    String
+  booking      Booking      @relation(fields: [bookingId], references: [id])
+  photographerId String
+  photographer Photographer @relation(fields: [photographerId], references: [id])
+  isReplacement Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@unique([bookingId, photographerId])
+}
+
+// Booking items (can be photographer, equipment, or transport)
+model BookingItem {
+  id             String       @id @default(uuid())
+  bookingId      String
+  booking        Booking      @relation(fields: [bookingId], references: [id])
+  photographerId String?
+  photographer   Photographer? @relation(fields: [photographerId], references: [id])
+  equipmentId    String?
+  equipment      Equipment?   @relation(fields: [equipmentId], references: [id])
+  transportId    String?
+  transport      Transport?   @relation(fields: [transportId], references: [id])
+  quantity       Int          @default(1)
+  unitPrice      Float
+  totalPrice     Float
+
+  @@unique([bookingId, photographerId, equipmentId, transportId])
+}
+
+// Replacement system
+model Replacement {
+  id              String       @id @default(uuid())
+  bookingId       String
+  booking         Booking      @relation(fields: [bookingId], references: [id])
+  originalItemId  String       // Reference to BookingItem ID
+  replacementType String       // 'PHOTOGRAPHER' | 'EQUIPMENT' | 'TRANSPORT'
+  originalGrade   Grade?       // For photographer replacements
+  replacementId   String       // ID of replacement item
+  status          String       // 'PENDING' | 'ACCEPTED' | 'REJECTED'
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+// Notification system
+model Notification {
+  id        String             @id @default(uuid())
+  userId    String
+  user      User               @relation(fields: [userId], references: [id])
+  type      NotificationType
+  subject   String?
+  message   String
+  link      String?
+  status    NotificationStatus @default(UNREAD)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+}
