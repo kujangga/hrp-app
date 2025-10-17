@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>All-in-one travel platform</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <header class="hero">
+      <div class="container">
+        <nav class="nav">
+          <a class="brand" href="#">Wanderly</a>
+          <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu">
+            <span class="sr-only">Toggle navigation</span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </button>
+          <ul class="nav-links" id="nav-menu">
+            <li><a href="#services">Services</a></li>
+            <li><a href="#experiences">Experiences</a></li>
+            <li><a href="#testimonial">Stories</a></li>
+            <li><a href="#footer">Support</a></li>
+          </ul>
+        </nav>
+
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <p class="caption">TRANSFER · ACCOMMODATION · EXPERIENCE</p>
+            <h1 class="display">All-in-one travel platform</h1>
+            <p class="lead">
+              Let us handle journey details, so you can focus on creating unforgettable memories.
+            </p>
+            <div class="button-group">
+              <a class="btn btn-primary" href="#">Get started</a>
+              <a class="btn btn-ghost" href="#experiences">Explore experiences</a>
+            </div>
+
+            <form class="cta-form" action="#" method="post">
+              <div class="form-grid">
+                <label class="form-field">
+                  <span class="form-label">Destination</span>
+                  <input class="input" type="text" name="destination" placeholder="Where to next?" aria-label="Destination" />
+                </label>
+                <label class="form-field">
+                  <span class="form-label">Travel dates</span>
+                  <input class="input" type="text" name="dates" placeholder="Select dates" aria-label="Travel dates" />
+                </label>
+                <button class="btn btn-primary form-submit" type="submit">Get started</button>
+              </div>
+            </form>
+          </div>
+
+          <figure class="hero-visual" aria-hidden="true">
+            <div class="hero-card">
+              <p class="caption">Traveler Highlight</p>
+              <p class="hero-card-title">Sunrise over Ubud</p>
+              <p class="small">
+                Guided morning trek, private transfer, organic breakfast with a local family.
+              </p>
+            </div>
+            <div class="hero-badges">
+              <div class="badge">
+                <span class="badge-dot"></span>
+                <span>Top-rated guides</span>
+              </div>
+              <div class="badge">
+                <span class="badge-dot"></span>
+                <span>Flexible itineraries</span>
+              </div>
+              <div class="badge">
+                <span class="badge-dot"></span>
+                <span>24/7 travel support</span>
+              </div>
+            </div>
+          </figure>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="section" id="services">
+        <div class="container">
+          <h2>Plan every part of the journey</h2>
+          <p class="lead">
+            From the moment you land to the memories you bring home, we combine logistics, stays, and
+            experiences into one effortless flow.
+          </p>
+          <div class="grid grid-3 cards">
+            <article class="card">
+              <h3>Seamless transfers</h3>
+              <p>
+                Private cars, airport pickups, and intercity rides with fixed pricing.
+              </p>
+            </article>
+            <article class="card">
+              <h3>Stay with peace of mind</h3>
+              <p>
+                Handpicked stays with flexible cancellation and 24/7 support.
+              </p>
+            </article>
+            <article class="card" id="experiences">
+              <h3>Immersive experiences</h3>
+              <p>
+                Local tours and activities you won’t find on the usual lists.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-surface" id="testimonial">
+        <div class="container testimonial">
+          <div>
+            <p class="caption">Traveler stories</p>
+            <h2>Trusted by explorers worldwide</h2>
+          </div>
+          <figure>
+            <blockquote>
+              “Best booking flow I’ve used. Clear pricing, zero surprises.”
+            </blockquote>
+            <figcaption>— Awan, Solo Traveler</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section cta">
+        <div class="container cta-content">
+          <div>
+            <h2>Ready for your next escape?</h2>
+            <p class="lead">
+              Personalize trips in minutes, confirm logistics instantly, and explore curated experiences
+              built with locals.
+            </p>
+          </div>
+          <a class="btn btn-primary" href="#">Get started</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer" id="footer">
+      <div class="container footer-grid">
+        <div>
+          <a class="brand" href="#">Wanderly</a>
+          <p class="small">
+            Your companion for transfers, stays, and experiences—crafted for modern travelers.
+          </p>
+        </div>
+        <div>
+          <h3 class="footer-heading">Company</h3>
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Press</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="footer-heading">Support</h3>
+          <ul>
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Contact</a></li>
+            <li><a href="#">Terms</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="container footer-bottom">
+        <p class="small">&copy; <span id="year">2024</span> Wanderly Travel Co. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      const navToggle = document.querySelector('.nav-toggle')
+      const navLinks = document.querySelector('.nav-links')
+      if (navToggle && navLinks) {
+        navToggle.addEventListener('click', () => {
+          const expanded = navToggle.getAttribute('aria-expanded') === 'true'
+          navToggle.setAttribute('aria-expanded', String(!expanded))
+          navLinks.classList.toggle('is-open')
+        })
+      }
+
+      const yearEl = document.getElementById('year')
+      if (yearEl) {
+        yearEl.textContent = new Date().getFullYear().toString()
+      }
+    </script>
+  </body>
+</html>
