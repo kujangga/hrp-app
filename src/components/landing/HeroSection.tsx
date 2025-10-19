@@ -3,6 +3,7 @@
 import { useEffect, useState, type CSSProperties } from 'react'
 import { motion } from 'framer-motion'
 import { WaveDivider } from '@/components/ui/wave-divider'
+import { COLORS } from '@/lib/colors'
 
 interface Location {
   id: string
@@ -511,6 +512,9 @@ const HeroSection = ({ session }: { session: unknown }) => {
           </motion.div>
         </div>
       </div>
+
+      {/* Wave divider at bottom - transition to POWDER_LIGHT sections */}
+      <WaveDivider position="bottom" color={COLORS.POWDER_LIGHT} />
     </section>
   )
 }

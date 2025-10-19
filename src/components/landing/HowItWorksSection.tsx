@@ -5,142 +5,84 @@ import { useInView } from 'react-intersection-observer'
 import { COLORS } from '@/lib/colors'
 import { Magnet } from '@/components/ui/magnet'
 import { WaveDivider } from '@/components/ui/wave-divider'
+import { SearchIcon } from '@/components/ui/SearchIcon'
+import { CreditCardIcon } from '@/components/ui/CreditCardIcon'
+import { UserCheckIcon } from '@/components/ui/UserCheckIcon'
+import { SparklesIcon } from '@/components/ui/SparklesIcon'
 
 const steps = [
   {
     number: '01',
-    title: 'Browse & Compare',
-    description: 'Explore photographer portfolios, read reviews, and compare styles to find your perfect match.',
-    icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-        />
-      </svg>
-    ),
+    title: 'Find Your Match',
+    description: 'Browse talented photographers and discover the perfect style for your special moments.',
+    IconComponent: SearchIcon,
     color: COLORS.BLUE_LIGHT,
   },
   {
     number: '02',
-    title: 'Book Securely',
-    description: 'Select your date, choose a package, and pay securely. Your payment is protected until delivery.',
-    icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-        />
-      </svg>
-    ),
-    color: COLORS.SLATE_MEDIUM,
+    title: 'Book & Pay',
+    description: 'Choose your package and secure your booking with protected payment.',
+    IconComponent: CreditCardIcon,
+    color: COLORS.BLUE_LIGHT,
   },
   {
     number: '03',
-    title: 'Get Matched',
-    description:
-      'We confirm your photographer, share their contact details, and ensure everything is set for your event.',
-    icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-        />
-      </svg>
-    ),
-    color: COLORS.NAVY_DARK,
+    title: 'Get Confirmed',
+    description: 'We match you with your photographer and handle all the coordination.',
+    IconComponent: UserCheckIcon,
+    color: COLORS.BLUE_LIGHT,
   },
   {
     number: '04',
-    title: 'Receive Photos',
-    description:
-      'Your photographer captures the magic, edits professionally, and delivers stunning photos within the agreed timeline.',
-    icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-        />
-      </svg>
-    ),
-    color: COLORS.TAUPE_NEUTRAL,
+    title: 'Enjoy Your Photos',
+    description: 'Receive professionally edited, stunning photos that capture your memories.',
+    IconComponent: SparklesIcon,
+    color: COLORS.BLUE_LIGHT,
   },
 ]
 
 function StepCard({ step, index, inView }: { step: typeof steps[0]; index: number; inView: boolean }) {
+  const IconComponent = step.IconComponent
+  
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{
-        duration: 0.5,
+        duration: 0.4,
         delay: index * 0.1,
-        ease: [0.21, 0.47, 0.32, 0.98],
       }}
+      className="relative h-full text-center"
     >
-      <Magnet magnitude={0.05} maxDistance={60}>
-        <div className="group relative h-full text-center transition-transform duration-300 hover:-translate-y-2">
-          {/* Large icon */}
-          <motion.div
-            className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl"
-            style={{
-              background: `${step.color}`,
-            }}
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-          >
-            <div className="scale-125 text-white">{step.icon}</div>
-          </motion.div>
+      {/* Icon container */}
+      <div
+        className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20"
+      >
+        <IconComponent size={36} speed={1} style={{ color: step.color }} />
+      </div>
 
-          {/* Step number */}
-          <div className="mb-4">
-            <span
-              className="inline-block rounded-full px-4 py-1 text-xs font-bold"
-              style={{
-                background: `${step.color}15`,
-                color: step.color,
-              }}
-            >
-              STEP {step.number}
-            </span>
-          </div>
+      {/* Step number */}
+      <div className="mb-3">
+        <span
+          className="inline-block rounded-full px-3 py-1 text-[10px] font-bold tracking-wider"
+          style={{
+            background: `${step.color}20`,
+            color: step.color,
+          }}
+        >
+          STEP {step.number}
+        </span>
+      </div>
 
-          {/* Title */}
-          <h3 className="mb-3 text-xl font-bold" style={{ color: COLORS.NAVY_DARK }}>
-            {step.title}
-          </h3>
+      {/* Title */}
+      <h3 className="mb-2 text-lg font-bold text-white">
+        {step.title}
+      </h3>
 
-          {/* Description */}
-          <p className="text-sm leading-relaxed" style={{ color: COLORS.SLATE_MEDIUM }}>
-            {step.description}
-          </p>
-
-          {/* Connecting line - desktop only */}
-          {index < 3 && (
-            <motion.div
-              className="absolute left-full top-10 hidden w-full lg:block"
-              initial={{ scaleX: 0 }}
-              animate={inView ? { scaleX: 1 } : {}}
-              transition={{ delay: index * 0.1 + 0.3, duration: 0.4 }}
-            >
-              <div
-                className="h-0.5 w-full origin-left"
-                style={{
-                  background: `${step.color}30`,
-                }}
-              />
-            </motion.div>
-          )}
-        </div>
-      </Magnet>
+      {/* Description */}
+      <p className="text-sm leading-relaxed px-2 text-white/70">
+        {step.description}
+      </p>
     </motion.div>
   )
 }
@@ -155,10 +97,9 @@ export default function HowItWorksSection() {
     <section
       ref={ref}
       className="relative overflow-hidden py-16 lg:py-24"
-      style={{ backgroundColor: 'white' }}
+      style={{ backgroundColor: COLORS.NAVY_DARK }}
     >
-      {/* Wave divider at top */}
-      <WaveDivider position="top" color={COLORS.POWDER_LIGHT} flip={true} />
+      {/* No wave divider at top since WhyHRP doesn't have bottom wave */}
 
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -190,8 +131,7 @@ export default function HowItWorksSection() {
 
           {/* Title */}
           <motion.h2
-            className="mb-4 text-[clamp(1.875rem,3.5vw,2.5rem)] font-bold tracking-tight"
-            style={{ color: COLORS.NAVY_DARK }}
+            className="mb-4 text-[clamp(1.875rem,3.5vw,2.5rem)] font-bold tracking-tight text-white"
             initial={{ opacity: 0, y: 30, scale: 0.95 }}
             animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
             transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
@@ -201,13 +141,12 @@ export default function HowItWorksSection() {
 
           {/* Subtitle */}
           <motion.p
-            className="mx-auto max-w-xl text-base"
-            style={{ color: COLORS.SLATE_MEDIUM }}
+            className="mx-auto max-w-2xl text-base text-white/70"
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.5 }}
           >
-            Booking your photographer is simple—just four easy steps
+            From browsing to beautiful photos—your journey is just four simple steps away
           </motion.p>
         </div>
 
@@ -261,7 +200,7 @@ export default function HowItWorksSection() {
         </motion.div>
       </div>
 
-      {/* Wave divider at bottom */}
+      {/* Wave divider at bottom - transition to ServiceGateway (POWDER_LIGHT) */}
       <WaveDivider position="bottom" color={COLORS.POWDER_LIGHT} />
     </section>
   )

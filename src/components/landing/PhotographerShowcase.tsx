@@ -247,7 +247,7 @@ export default function PhotographerShowcase() {
   const filteredTalents = talents.filter((talent) => selectedGrade === 'all' || talent.grade === selectedGrade)
 
   return (
-    <section ref={ref} className="relative overflow-hidden bg-white py-16 lg:py-24">
+    <section ref={ref} className="relative overflow-hidden py-16 lg:py-24" style={{ backgroundColor: COLORS.NAVY_DARK }}>
       {/* Wave divider at top */}
       <WaveDivider position="top" color={COLORS.POWDER_LIGHT} flip={true} />
 
@@ -362,7 +362,7 @@ export default function PhotographerShowcase() {
         </motion.div>
       </div>
 
-      {/* Wave divider at bottom */}
+      {/* Wave divider at bottom - transition to Equipment (POWDER_LIGHT) */}
       <WaveDivider position="bottom" color={COLORS.POWDER_LIGHT} />
     </section>
   )

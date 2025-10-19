@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { COLORS } from '@/lib/colors'
 import { Magnet } from '@/components/ui/magnet'
+import { WaveDivider } from '@/components/ui/wave-divider'
 import { BadgeCheck, Zap, DollarSign, Shield } from 'lucide-react'
 
 const benefits = [
@@ -218,6 +219,9 @@ export default function WhyHRPSection() {
           </Magnet>
         </motion.div>
       </div>
+
+      {/* Wave divider at bottom - transition to HowItWorks (NAVY_DARK) */}
+      <WaveDivider position="bottom" color={COLORS.NAVY_DARK} />
     </section>
   )
 }

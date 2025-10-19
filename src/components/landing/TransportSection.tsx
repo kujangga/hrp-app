@@ -128,9 +128,10 @@ export default function TransportSection() {
   return (
     <section
       ref={ref}
-      className="relative overflow-hidden bg-white py-16 lg:py-24"
+      className="relative overflow-hidden py-16 lg:py-24"
+      style={{ backgroundColor: COLORS.NAVY_DARK }}
     >
-      <WaveDivider position="top" color={COLORS.POWDER_LIGHT} flip={true} />
+      {/* No top divider - wave from Equipment section */}
 
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mb-12 text-center">

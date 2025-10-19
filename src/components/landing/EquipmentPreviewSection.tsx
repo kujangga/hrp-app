@@ -134,7 +134,7 @@ export default function EquipmentPreviewSection() {
 
   return (
     <section ref={ref} className="relative overflow-hidden py-16 lg:py-24" style={{ backgroundColor: COLORS.POWDER_LIGHT }}>
-      <WaveDivider position="top" color="white" flip={true} />
+      {/* No top divider - wave from previous section */}
 
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mb-12 text-center">
@@ -218,7 +218,8 @@ export default function EquipmentPreviewSection() {
         </motion.div>
       </div>
 
-      <WaveDivider position="bottom" color="white" />
+      {/* Wave divider at bottom - transition to Transport (NAVY_DARK) */}
+      <WaveDivider position="bottom" color={COLORS.NAVY_DARK} />
     </section>
   )
 }
