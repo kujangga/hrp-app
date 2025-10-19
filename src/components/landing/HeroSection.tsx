@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type CSSProperties } from 'react'
 import { motion } from 'framer-motion'
+import { WaveDivider } from '@/components/ui/wave-divider'
 
 interface Location {
   id: string
@@ -154,8 +155,11 @@ const HeroSection = ({ session }: { session: unknown }) => {
         }}
       />
 
-      {/* Black Overlay with Alpha - Balanced for readability */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/55 to-black/65" />
+      {/* Black Overlay with Alpha - Darker overlay for better contrast */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black/75 via-black/70 to-black/80" />
+
+      {/* Wave Divider for smooth transition to next section */}
+      <WaveDivider position="bottom" color="#E1E7F2" />
 
       <div className="relative mx-auto flex w-full max-w-7xl items-center px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
         <div className="grid w-full gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,520px)] lg:items-center">
@@ -175,8 +179,8 @@ const HeroSection = ({ session }: { session: unknown }) => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
             >
-              Crews gear
-              <span className="block">transport delivered</span>
+              One Platform,
+              <span className="block">All Creative Needs.</span>
             </motion.h1>
 
             <motion.p

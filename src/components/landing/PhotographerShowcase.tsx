@@ -1,355 +1,369 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
+import { useState } from 'react'
+import { motion } from 'framer-motion'
+import { useInView } from 'react-intersection-observer'
+import { COLORS } from '@/lib/colors'
+import { Magnet } from '@/components/ui/magnet'
+import { WaveDivider } from '@/components/ui/wave-divider'
+import { Star, MapPin, CheckCircle2, Heart } from 'lucide-react'
 
 interface Talent {
-  id: number;
-  name: string;
-  grade: 'A' | 'B' | 'C' | 'D' | 'E';
-  rating: number;
-  reviewCount: number;
-  price: number;
-  location: string;
-  available: boolean;
-  specialties: string[];
-  portfolio: string[];
-  talentType: 'Photographer' | 'Videographer';
+  id: number
+  name: string
+  grade: 'A' | 'B' | 'C' | 'D' | 'E'
+  rating: number
+  reviewCount: number
+  price: number
+  location: string
+  available: boolean
+  specialties: string[]
+  talentType: 'Photographer' | 'Videographer'
 }
 
-const TalentShowcase = () => {
-  const [selectedGrade, setSelectedGrade] = useState<'A' | 'B' | 'C' | 'D' | 'E' | 'all'>('all');
-  const [selectedSpecialty, setSelectedSpecialty] = useState<string>('all');
-  
-  // Mock data for talents (photographers & videographers)
-  const talents: Talent[] = [
-    {
-      id: 1,
-      name: "Andreas Wibowo",
-      grade: "A",
-      rating: 4.9,
-      reviewCount: 124,
-      price: 2500000,
-      location: "Jakarta",
-      available: true,
-      specialties: ["Wedding", "Portrait"],
-      portfolio: [
-        "https://images.unsplash.com/photo-1519699047748-de8e457a634e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1519699047748-de8e457a634e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-      ],
-      talentType: "Photographer"
-    },
-    {
-      id: 2,
-      name: "Sarah Chen",
-      grade: "B",
-      rating: 4.7,
-      reviewCount: 89,
-      price: 1800000,
-      location: "Bandung",
-      available: true,
-      specialties: ["Corporate", "Event"],
-      portfolio: [
-        "https://images.unsplash.com/photo-1519699047748-de8e457a634e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1519699047748-de8e457a634e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-      ],
-      talentType: "Videographer"
-    },
-    {
-      id: 3,
-      name: "Budi Santoso",
-      grade: "C",
-      rating: 4.5,
-      reviewCount: 67,
-      price: 1200000,
-      location: "Bali",
-      available: false,
-      specialties: ["Event", "Portrait"],
-      portfolio: [
-        "https://images.unsplash.com/photo-1519699047748-de8e457a634e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1519699047748-de8e457a634e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-      ],
-      talentType: "Photographer"
-    },
-    {
-      id: 4,
-      name: "Maria Gunawan",
-      grade: "A",
-      rating: 4.8,
-      reviewCount: 156,
-      price: 3200000,
-      location: "Jakarta",
-      available: true,
-      specialties: ["Wedding", "Fashion"],
-      portfolio: [
-        "https://images.unsplash.com/photo-1519699047748-de8e457a634e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1519699047748-de8e457a634e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-      ],
-      talentType: "Photographer"
-    },
-    {
-      id: 5,
-      name: "James Wilson",
-      grade: "B",
-      rating: 4.6,
-      reviewCount: 92,
-      price: 1950000,
-      location: "Singapore",
-      available: true,
-      specialties: ["Corporate", "Product"],
-      portfolio: [
-        "https://images.unsplash.com/photo-1519699047748-de8e457a634e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1519699047748-de8e457a634e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-      ],
-      talentType: "Videographer"
-    },
-    {
-      id: 6,
-      name: "Dewi Kusuma",
-      grade: "C",
-      rating: 4.3,
-      reviewCount: 43,
-      price: 800000,
-      location: "Yogyakarta",
-      available: true,
-      specialties: ["Portrait", "Event"],
-      portfolio: [
-        "https://images.unsplash.com/photo-1519699047748-de8e457a634e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1519699047748-de8e457a634e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-      ],
-      talentType: "Photographer"
-    }
-  ];
+const talents: Talent[] = [
+  {
+    id: 1,
+    name: 'Andreas Wibowo',
+    grade: 'A',
+    rating: 4.9,
+    reviewCount: 124,
+    price: 2500000,
+    location: 'Jakarta',
+    available: true,
+    specialties: ['Wedding', 'Portrait'],
+    talentType: 'Photographer',
+  },
+  {
+    id: 2,
+    name: 'Sarah Chen',
+    grade: 'B',
+    rating: 4.7,
+    reviewCount: 89,
+    price: 1800000,
+    location: 'Bandung',
+    available: true,
+    specialties: ['Corporate', 'Event'],
+    talentType: 'Videographer',
+  },
+  {
+    id: 3,
+    name: 'Budi Santoso',
+    grade: 'C',
+    rating: 4.5,
+    reviewCount: 67,
+    price: 1200000,
+    location: 'Bali',
+    available: false,
+    specialties: ['Event', 'Portrait'],
+    talentType: 'Photographer',
+  },
+  {
+    id: 4,
+    name: 'Maria Gunawan',
+    grade: 'A',
+    rating: 4.8,
+    reviewCount: 156,
+    price: 3200000,
+    location: 'Jakarta',
+    available: true,
+    specialties: ['Wedding', 'Fashion'],
+    talentType: 'Photographer',
+  },
+  {
+    id: 5,
+    name: 'James Wilson',
+    grade: 'B',
+    rating: 4.6,
+    reviewCount: 92,
+    price: 1950000,
+    location: 'Singapore',
+    available: true,
+    specialties: ['Corporate', 'Product'],
+    talentType: 'Videographer',
+  },
+  {
+    id: 6,
+    name: 'Dewi Kusuma',
+    grade: 'C',
+    rating: 4.3,
+    reviewCount: 43,
+    price: 800000,
+    location: 'Yogyakarta',
+    available: true,
+    specialties: ['Portrait', 'Event'],
+    talentType: 'Photographer',
+  },
+]
 
-  // Get unique specialties for filter
-  const specialties = Array.from(
-    new Set(talents.flatMap(p => p.specialties))
-  );
+const gradeColors = {
+  A: COLORS.BLUE_LIGHT,
+  B: COLORS.SLATE_MEDIUM,
+  C: COLORS.NAVY_DARK,
+  D: COLORS.TAUPE_NEUTRAL,
+  E: COLORS.POWDER_LIGHT,
+}
 
-  // Filter talents based on selections
-  const filteredTalents = talents.filter(talent => {
-    if (selectedGrade !== 'all' && talent.grade !== selectedGrade) {
-      return false;
-    }
-    if (selectedSpecialty !== 'all' && !talent.specialties.includes(selectedSpecialty)) {
-      return false;
-    }
-    return true;
-  });
-
-  // Get grade info for display
-  const getGradeInfo = (grade: string) => {
-    switch (grade) {
-      case 'A': return { name: 'Premium', color: 'bg-yellow-400 text-yellow-900', price: '3M - 5M IDR/day' };
-      case 'B': return { name: 'Professional', color: 'bg-green-400 text-green-900', price: '2M - 3M IDR/day' };
-      case 'C': return { name: 'Standard', color: 'bg-blue-400 text-blue-900', price: '1.2M - 2M IDR/day' };
-      case 'D': return { name: 'Entry', color: 'bg-indigo-400 text-indigo-900', price: '800K - 1.2M IDR/day' };
-      case 'E': return { name: 'Basic', color: 'bg-purple-400 text-purple-900', price: '500K - 800K IDR/day' };
-      default: return { name: '', color: '', price: '' };
-    }
-  };
+function TalentCard({ talent, index, inView }: { talent: Talent; index: number; inView: boolean }) {
+  const gradeColor = gradeColors[talent.grade]
 
   return (
-    <div className="py-16 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <h2 className="text-base font-semibold text-purple-600 tracking-wide uppercase">Talent Directory</h2>
-          <p className="mt-2 text-3xl font-extrabold text-gray-900 sm:text-4xl">
-            Graded Photographers & Videographers
-          </p>
-          <p className="mt-4 max-w-2xl text-xl text-gray-500 mx-auto">
-            Choose from our curated selection of 1,247+ verified professionals based on your needs
-          </p>
-        </div>
+    <motion.div
+      initial={{ opacity: 0, y: 40, scale: 0.9 }}
+      animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
+      transition={{
+        duration: 0.6,
+        delay: index * 0.12,
+        ease: [0.22, 1, 0.36, 1],
+        type: 'spring',
+        stiffness: 100,
+        damping: 15,
+      }}
+    >
+      <Magnet magnitude={0.08} maxDistance={80}>
+        <div
+          className="group relative h-full overflow-hidden rounded-2xl bg-white p-6 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
+          style={{
+            borderLeft: `4px solid ${gradeColor}`,
+          }}
+        >
+          {/* Subtle gradient overlay on hover */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+            style={{
+              background: `linear-gradient(135deg, ${gradeColor}08 0%, transparent 100%)`,
+            }}
+          />
 
-        {/* Grade System Explanation */}
-        <div className="mt-16">
-          <div className="text-center">
-            <h3 className="text-2xl font-bold text-gray-900">Understanding Our Grade System</h3>
-            <p className="mt-2 text-gray-600">Our A-E grading ensures transparent quality and pricing</p>
-          </div>
-          
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-5 gap-4">
-            {['A', 'B', 'C', 'D', 'E'].map((grade) => {
-              const gradeInfo = getGradeInfo(grade);
-              return (
-                <div 
-                  key={grade}
-                  className={`p-4 rounded-lg cursor-pointer transition-all duration-300 ${
-                    selectedGrade === grade 
-                      ? 'ring-2 ring-purple-500 bg-purple-50' 
-                      : 'bg-gray-50 hover:bg-gray-100'
-                  }`}
-                  onClick={() => setSelectedGrade(grade as 'A' | 'B' | 'C' | 'D' | 'E' | 'all')}
-                >
-                  <div className="flex flex-col items-center">
-                    <span className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${gradeInfo.color}`}>
-                      {grade}
-                    </span>
-                    <h4 className="mt-2 font-semibold text-gray-900">{gradeInfo.name}</h4>
-                    <p className="mt-1 text-sm text-gray-600 text-center">{gradeInfo.price}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          
-          <div className="mt-6 text-center">
-            <button 
-              className="text-purple-600 font-medium hover:text-purple-800"
-              onClick={() => setSelectedGrade('all')}
-            >
-              {selectedGrade !== 'all' ? 'View All Grades' : 'All Grades Selected'}
-            </button>
-          </div>
-        </div>
-
-        {/* Specialty Filter */}
-        <div className="mt-10">
-          <div className="flex flex-wrap justify-center gap-2">
-            <button
-              className={`px-4 py-2 rounded-full text-sm font-medium ${
-                selectedSpecialty === 'all'
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-              }`}
-              onClick={() => setSelectedSpecialty('all')}
-            >
-              All Specialties
-            </button>
-            {specialties.map((specialty) => (
-              <button
-                key={specialty}
-                className={`px-4 py-2 rounded-full text-sm font-medium ${
-                  selectedSpecialty === specialty
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-                }`}
-                onClick={() => setSelectedSpecialty(specialty)}
+          <div className="relative">
+            {/* Header */}
+            <div className="mb-4 flex items-start justify-between">
+              <div className="flex-1">
+                <h3 className="text-lg font-bold" style={{ color: COLORS.NAVY_DARK }}>
+                  {talent.name}
+                </h3>
+                <p className="text-sm" style={{ color: COLORS.SLATE_MEDIUM }}>
+                  {talent.talentType}
+                </p>
+              </div>
+              <span
+                className="rounded-full px-2 py-1 text-xs font-bold"
+                style={{ background: `${gradeColor}20`, color: gradeColor }}
               >
-                {specialty}
-              </button>
-            ))}
+                Grade {talent.grade}
+              </span>
+            </div>
+
+            {/* Rating */}
+            <div className="mb-3 flex items-center">
+              <div className="flex">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    className={`h-4 w-4 ${i < Math.floor(talent.rating) ? 'fill-current' : ''}`}
+                    style={{ color: i < Math.floor(talent.rating) ? COLORS.TAUPE_NEUTRAL : COLORS.POWDER_LIGHT }}
+                  />
+                ))}
+              </div>
+              <span className="ml-2 text-sm" style={{ color: COLORS.SLATE_MEDIUM }}>
+                {talent.rating} ({talent.reviewCount})
+              </span>
+            </div>
+
+            {/* Location & Availability */}
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center">
+                <MapPin className="mr-1 h-4 w-4" style={{ color: COLORS.BLUE_LIGHT }} />
+                <span className="text-sm" style={{ color: COLORS.SLATE_MEDIUM }}>
+                  {talent.location}
+                </span>
+              </div>
+              <span
+                className="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium"
+                style={{
+                  background: talent.available ? `${COLORS.BLUE_LIGHT}20` : `${COLORS.SLATE_MEDIUM}20`,
+                  color: talent.available ? COLORS.BLUE_LIGHT : COLORS.SLATE_MEDIUM,
+                }}
+              >
+                {talent.available ? 'Available' : 'Unavailable'}
+              </span>
+            </div>
+
+            {/* Price */}
+            <p className="mb-4 text-lg font-bold" style={{ color: gradeColor }}>
+              {talent.price.toLocaleString()} IDR
+              <span className="text-sm font-normal" style={{ color: COLORS.SLATE_MEDIUM }}>
+                /day
+              </span>
+            </p>
+
+            {/* Specialties */}
+            <div className="mb-6 flex flex-wrap gap-1">
+              {talent.specialties.map((specialty) => (
+                <span
+                  key={specialty}
+                  className="rounded-full px-2.5 py-0.5 text-xs font-medium"
+                  style={{ background: `${gradeColor}20`, color: gradeColor }}
+                >
+                  {specialty}
+                </span>
+              ))}
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="flex space-x-3">
+              <motion.button
+                className="flex-1 rounded-lg py-2 font-medium text-white"
+                style={{ background: gradeColor }}
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                View Profile
+              </motion.button>
+              <motion.button
+                className={`rounded-lg border p-2 ${talent.available ? '' : 'opacity-50'}`}
+                style={{ borderColor: COLORS.POWDER_LIGHT, color: talent.available ? gradeColor : COLORS.SLATE_MEDIUM }}
+                disabled={!talent.available}
+                whileHover={talent.available ? { scale: 1.1 } : {}}
+                whileTap={talent.available ? { scale: 0.9 } : {}}
+              >
+                <Heart className="h-5 w-5" />
+              </motion.button>
+            </div>
+          </div>
+        </div>
+      </Magnet>
+    </motion.div>
+  )
+}
+
+export default function PhotographerShowcase() {
+  const [selectedGrade, setSelectedGrade] = useState<'A' | 'B' | 'C' | 'D' | 'E' | 'all'>('all')
+  const [ref, inView] = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  })
+
+  const filteredTalents = talents.filter((talent) => selectedGrade === 'all' || talent.grade === selectedGrade)
+
+  return (
+    <section ref={ref} className="relative overflow-hidden bg-white py-16 lg:py-24">
+      {/* Wave divider at top */}
+      <WaveDivider position="top" color={COLORS.POWDER_LIGHT} flip={true} />
+
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-12 text-center">
+          <motion.div
+            className="mb-3 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wider"
+            style={{ color: COLORS.BLUE_LIGHT }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5 }}
+          >
+            <motion.div
+              className="h-px w-8"
+              style={{ backgroundColor: COLORS.BLUE_LIGHT }}
+              initial={{ width: 0 }}
+              animate={inView ? { width: 32 } : {}}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            />
+            Talent Directory
+            <motion.div
+              className="h-px w-8"
+              style={{ backgroundColor: COLORS.BLUE_LIGHT }}
+              initial={{ width: 0 }}
+              animate={inView ? { width: 32 } : {}}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            />
+          </motion.div>
+
+          <motion.h2
+            className="mb-4 text-[clamp(1.875rem,3.5vw,2.5rem)] font-bold tracking-tight"
+            style={{ color: COLORS.NAVY_DARK }}
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
+            transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          >
+            Graded Photographers & Videographers
+          </motion.h2>
+
+          <motion.p
+            className="mx-auto max-w-xl text-base"
+            style={{ color: COLORS.SLATE_MEDIUM }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.5 }}
+          >
+            Choose from our curated selection of 1,247+ verified professionals based on your needs
+          </motion.p>
+        </div>
+
+        {/* Grade Filter */}
+        <div className="mb-10">
+          <div className="flex flex-wrap justify-center gap-2">
+            {['all', 'A', 'B', 'C', 'D', 'E'].map((grade) => {
+              const isActive = selectedGrade === grade
+              const color = grade === 'all' ? COLORS.NAVY_DARK : gradeColors[grade as keyof typeof gradeColors]
+
+              return (
+                <motion.button
+                  key={grade}
+                  className="rounded-full px-4 py-2 text-sm font-medium transition-all"
+                  style={{
+                    background: isActive ? color : COLORS.POWDER_LIGHT,
+                    color: isActive ? 'white' : COLORS.SLATE_MEDIUM,
+                  }}
+                  onClick={() => setSelectedGrade(grade as typeof selectedGrade)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {grade === 'all' ? 'All Grades' : `Grade ${grade}`}
+                </motion.button>
+              )
+            })}
           </div>
         </div>
 
         {/* Talent Grid */}
-        <div className="mt-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredTalents.slice(0, 6).map((talent) => { // Show only first 6 talents
-              const gradeInfo = getGradeInfo(talent.grade);
-              return (
-                <div key={talent.id} className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-shadow duration-300">
-                  <div className="p-6">
-                    <div className="flex items-start">
-                      <div className="flex-shrink-0">
-                        <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16" />
-                      </div>
-                      <div className="ml-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h3 className="text-lg font-bold text-gray-900">{talent.name}</h3>
-                            <div className="text-sm text-gray-500">{talent.talentType}</div>
-                          </div>
-                          <span className={`text-xs px-2 py-1 rounded-full ${gradeInfo.color}`}>
-                            Grade {talent.grade}
-                          </span>
-                        </div>
-                        <div className="mt-1 flex items-center">
-                          <div className="flex">
-                            {[...Array(5)].map((_, i) => (
-                              <svg
-                                key={i}
-                                className={`h-4 w-4 ${i < Math.floor(talent.rating) ? 'text-yellow-400' : 'text-gray-300'}`}
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                              </svg>
-                            ))}
-                          </div>
-                          <span className="ml-2 text-sm text-gray-600">
-                            {talent.rating} ({talent.reviewCount})
-                          </span>
-                        </div>
-                        <div className="mt-1 flex items-center justify-between">
-                          <p className="text-sm text-gray-600">
-                            {talent.location}
-                          </p>
-                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                            talent.available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                          }`}>
-                            {talent.available ? 'Available' : 'Unavailable'}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-4">
-                      <p className="text-lg font-bold text-gray-900">
-                        {talent.price.toLocaleString()} IDR<span className="text-sm font-normal text-gray-600">/day</span>
-                      </p>
-                    </div>
-                    
-                    <div className="mt-4">
-                      <div className="flex flex-wrap gap-1">
-                        {talent.specialties.map((specialty) => (
-                          <span 
-                            key={specialty} 
-                            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800"
-                          >
-                            {specialty}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    {/* Portfolio Preview */}
-                    <div className="mt-4 grid grid-cols-3 gap-2">
-                      {talent.portfolio.slice(0, 3).map((img, index) => (
-                        <div key={index} className="aspect-square bg-gray-200 border-2 border-dashed rounded-lg" />
-                      ))}
-                    </div>
-                    
-                    <div className="mt-6 flex space-x-3">
-                      <button className="flex-1 bg-purple-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-purple-700 transition-colors">
-                        View Profile
-                      </button>
-                      <button 
-                        className={`p-2 border border-gray-300 rounded-lg hover:bg-gray-50 ${
-                          talent.available ? 'text-indigo-600' : 'text-gray-400'
-                        }`}
-                        disabled={!talent.available}
-                      >
-                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+        <div className="mb-16 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredTalents.slice(0, 6).map((talent, index) => (
+            <TalentCard key={talent.id} talent={talent} index={index} inView={inView} />
+          ))}
         </div>
 
-        {/* View All CTA */}
-        <div className="mt-12 text-center">
-          <button className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700">
-            View All Professionals (1,247+)
-            <svg className="ml-2 -mr-1 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </button>
-        </div>
+        {/* CTA */}
+        <motion.div
+          className="text-center"
+          initial={{ opacity: 0, y: 30, scale: 0.9 }}
+          animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
+          transition={{ duration: 0.6, delay: 1, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <Magnet magnitude={0.12} maxDistance={100}>
+            <motion.button
+              className="inline-flex items-center gap-2 rounded-full px-8 py-3 text-sm font-semibold text-white"
+              style={{ background: COLORS.NAVY_DARK }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              View All Professionals (1,247+)
+              <motion.svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                animate={{ x: [0, 4, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </motion.svg>
+            </motion.button>
+          </Magnet>
+        </motion.div>
       </div>
-    </div>
-  );
-};
 
-export default TalentShowcase;
+      {/* Wave divider at bottom */}
+      <WaveDivider position="bottom" color={COLORS.POWDER_LIGHT} />
+    </section>
+  )
+}

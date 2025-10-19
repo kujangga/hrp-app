@@ -2,7 +2,8 @@
 
 import { useSession } from 'next-auth/react'
 import HeroSection from '@/components/landing/HeroSection'
-import ServicesSection from '@/components/landing/ServicesSection'
+import WhyHRPSection from '@/components/landing/WhyHRPSection'
+import HowItWorksSection from '@/components/landing/HowItWorksSection'
 import TalentShowcase from '@/components/landing/PhotographerShowcase' // Updated component name
 import HowItWorks from '@/components/landing/HowItWorks'
 import PortfolioGallery from '@/components/landing/PortfolioGallery'
@@ -19,7 +20,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       <HeroSection session={session} />
-      <ServicesSection />
+      <WhyHRPSection />
+      <HowItWorksSection />
       <ServiceGatewaySection />
       <TalentShowcase />
       <EquipmentPreviewSection />

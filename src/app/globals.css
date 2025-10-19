@@ -37,3 +37,55 @@
     @apply bg-white border border-purple-600 text-purple-700 font-medium rounded-lg hover:bg-purple-50 transition duration-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2;
   }
 }
+
+@layer utilities {
+  /* Orbiting Circles Animation */
+  @keyframes orbit {
+    0% {
+      transform: rotate(0deg) translateY(calc(var(--radius) * 1px)) rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg) translateY(calc(var(--radius) * 1px)) rotate(-360deg);
+    }
+  }
+
+  /* Shimmer Animation */
+  @keyframes shimmer {
+    0% {
+      background-position: -100% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  /* Background Position Spin for Neon Gradient */
+  @keyframes background-position-spin {
+    0% {
+      background-position: top center;
+    }
+    100% {
+      background-position: bottom center;
+    }
+  }
+
+  /* Float Animation */
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  /* Pulse Glow */
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(125, 151, 182, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 40px rgba(125, 151, 182, 0.6);
+    }
+  }
+}
