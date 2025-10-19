@@ -6,6 +6,7 @@ import HowItWorksSection from '@/components/landing/HowItWorksSection'
 import LocationCoverage from '@/components/landing/LocationCoverage'
 import CtaSection from '@/components/landing/CtaSection'
 import ServiceGatewaySection from '@/components/landing/ServiceGatewaySection'
+import Footer from '@/components/landing/Footer'
 
 export default function Home() {
   const { data: session } = useSession()
@@ -17,6 +18,7 @@ export default function Home() {
       <HowItWorksSection />
       <LocationCoverage />
       <CtaSection session={session} />
+      <Footer />
     </div>
   )
 }

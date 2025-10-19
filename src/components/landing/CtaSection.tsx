@@ -194,8 +194,8 @@ const CtaSection = () => {
         </motion.div>
       </div>
 
-      {/* Bottom Wave Divider */}
-      <WaveDivider position="bottom" color={COLORS.NAVY_DARK} />
+      {/* Bottom Wave Divider - menggunakan warna Footer yang lebih gelap */}
+      <WaveDivider position="bottom" color="#0f1924" />
     </section>
   )
 }
