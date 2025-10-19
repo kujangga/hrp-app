@@ -76,7 +76,7 @@ export default function MapView({ locations, selectedLocation, onLocationSelect 
   const center: [number, number] = [-2.5, 118.0]
   
   return (
-    <div className="relative h-96 md:h-[500px] w-full rounded-xl overflow-hidden">
+    <div className="relative h-96 md:h-[500px] w-full rounded-xl overflow-hidden z-10">
       <MapContainer
         center={center}
         zoom={5}
@@ -119,7 +119,7 @@ export default function MapView({ locations, selectedLocation, onLocationSelect 
       </MapContainer>
       
       {/* Map legend */}
-      <div className="absolute bottom-4 right-4 rounded-lg bg-white p-3 shadow-md z-[1000]">
+      <div className="absolute bottom-4 right-4 rounded-lg bg-white p-3 shadow-md z-[5]">
         <div className="flex flex-col gap-2 text-xs">
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded-full" style={{ backgroundColor: COLORS.BLUE_LIGHT }} />
