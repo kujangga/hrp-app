@@ -47,64 +47,56 @@ function ServiceCard({ service, index, inView }: { service: typeof services[0]; 
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{
-        duration: 0.4,
+        duration: 0.5,
         delay: index * 0.1,
       }}
-      className="relative h-full overflow-hidden rounded-2xl bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
+      className="group relative h-full"
     >
-      {/* Icon */}
-      <div
-        className="mb-5 inline-flex h-16 w-16 items-center justify-center rounded-2xl"
-        style={{
-          backgroundColor: `${service.color}20`,
-        }}
-      >
-        <IconComponent size={32} speed={1} style={{ color: service.color }} />
-      </div>
-
-      {/* Title */}
-      <h3 className="mb-3 text-xl font-bold" style={{ color: COLORS.NAVY_DARK }}>
-        {service.title}
-      </h3>
-
-      {/* Description */}
-      <p className="mb-5 text-sm leading-relaxed" style={{ color: COLORS.SLATE_MEDIUM }}>
-        {service.description}
-      </p>
-
-      {/* Features List */}
-      <ul className="mb-6 space-y-2">
-        {service.features.map((feature, idx) => (
-          <li key={idx} className="flex items-center text-sm" style={{ color: COLORS.SLATE_MEDIUM }}>
-            <svg
-              className="mr-2 h-4 w-4 flex-shrink-0"
-              style={{ color: service.color }}
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-            {feature}
-          </li>
-        ))}
-      </ul>
-
-      {/* CTA Button */}
-      <Link href={service.link}>
-        <button
-          className="w-full rounded-xl py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          style={{ backgroundColor: service.color }}
+      <div className="relative h-full rounded-2xl bg-white p-7 shadow-md transition-all duration-300 hover:shadow-xl">
+        {/* Simple Icon */}
+        <div
+          className="mb-5 inline-flex h-16 w-16 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-105"
+          style={{ backgroundColor: `${service.color}15` }}
         >
-          {service.cta}
-        </button>
-      </Link>
+          <IconComponent size={32} speed={1} style={{ color: service.color }} />
+        </div>
+
+        {/* Title */}
+        <h3 className="mb-3 text-xl font-bold" style={{ color: COLORS.NAVY_DARK }}>
+          {service.title}
+        </h3>
+
+        {/* Description */}
+        <p className="mb-5 text-sm leading-relaxed" style={{ color: COLORS.SLATE_MEDIUM }}>
+          {service.description}
+        </p>
+
+        {/* Features - Simple dots */}
+        <ul className="mb-6 space-y-2.5">
+          {service.features.map((feature, idx) => (
+            <li key={idx} className="flex items-center gap-2.5 text-sm" style={{ color: COLORS.SLATE_MEDIUM }}>
+              <span
+                className="h-1.5 w-1.5 rounded-full flex-shrink-0"
+                style={{ backgroundColor: service.color }}
+              />
+              {feature}
+            </li>
+          ))}
+        </ul>
+
+        {/* Simple CTA Button */}
+        <Link href={service.link}>
+          <button
+            className="w-full rounded-xl py-3 text-sm font-semibold text-white transition-all duration-200 hover:opacity-90"
+            style={{ backgroundColor: service.color }}
+          >
+            {service.cta}
+          </button>
+        </Link>
+      </div>
     </motion.div>
   )
 }
