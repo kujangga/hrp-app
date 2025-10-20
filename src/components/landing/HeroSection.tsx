@@ -3,6 +3,7 @@
 import { useEffect, useState, type CSSProperties } from 'react'
 import { motion } from 'framer-motion'
 import { WaveDivider } from '@/components/ui/wave-divider'
+import { LocationDateWidget } from '@/components/landing/LocationDateWidget'
 import { COLORS } from '@/lib/colors'
 
 interface Location {
@@ -146,7 +147,7 @@ const HeroSection = ({ session }: { session: unknown }) => {
   const today = new Date().toISOString().split('T')[0]
 
   return (
-    <section className="relative flex min-h-screen items-center overflow-hidden">
+    <section className="relative flex min-h-screen items-center overflow-x-hidden">
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -162,7 +163,7 @@ const HeroSection = ({ session }: { session: unknown }) => {
       {/* Wave Divider for smooth transition to next section */}
       <WaveDivider position="bottom" color="#E1E7F2" />
 
-      <div className="relative mx-auto flex w-full max-w-7xl items-center px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+      <div className="relative mx-auto flex w-full max-w-7xl items-center px-4 py-8 pb-[120px] sm:px-6 lg:px-8 lg:py-12">
         <div className="grid w-full gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,520px)] lg:items-center">
           <div className="relative z-10">
             <motion.div
@@ -196,95 +197,20 @@ const HeroSection = ({ session }: { session: unknown }) => {
             </motion.p>
 
             <motion.div
-              className="mt-8 rounded-3xl border border-[#E1E7F2]/70 bg-[#E1E7F2]/90 p-5 shadow-xl shadow-[#162533]/10 backdrop-blur md:p-6"
+              className="relative z-[40] mt-8 rounded-3xl border border-[#E1E7F2]/70 bg-[#E1E7F2]/90 p-5 pb-6 shadow-xl shadow-[#162533]/10 backdrop-blur md:p-6 md:pb-8"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.8 }}
             >
-              <div className="grid gap-3 md:grid-cols-[1.6fr_1.2fr_auto] md:items-center">
-                <div className="space-y-1.5">
-                  <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#546079]">
-                    Destination
-                  </span>
-                  <div className="relative flex items-center rounded-2xl border border-[#E1E7F2] bg-[#E1E7F2] px-3.5 py-2.5">
-                    <svg
-                      className="mr-3 h-4 w-4 text-[#7D97B6]"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1.5}
-                        d="M12 21s7-4.686 7-10a7 7 0 10-14 0c0 5.314 7 10 7 10z"
-                      />
-                      <circle cx="12" cy="11" r="2.5" />
-                    </svg>
-                    <select
-                      value={selectedLocation}
-                      onChange={(event) => setSelectedLocation(event.target.value)}
-                      className="w-full appearance-none bg-transparent text-sm font-semibold text-[#162533] outline-none"
-                    >
-                      <option value="" disabled>
-                        Select location
-                      </option>
-                      <optgroup label="Indonesia">
-                        {LOCATION_OPTIONS.filter((option) => option.type === 'city').map((option) => (
-                          <option key={option.id} value={option.name}>
-                            {option.name}
-                          </option>
-                        ))}
-                      </optgroup>
-                      <optgroup label="International">
-                        {LOCATION_OPTIONS.filter((option) => option.type === 'country').map((option) => (
-                          <option key={option.id} value={option.name}>
-                            {option.name}
-                          </option>
-                        ))}
-                      </optgroup>
-                    </select>
-                    <svg
-                      className="pointer-events-none absolute right-4 h-4 w-4 text-[#546079]/60"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={1.5}
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                </div>
+              <div className="grid gap-3 md:grid-cols-[1.6fr_1.2fr_auto] md:items-start">
+                <LocationDateWidget
+                  selectedLocation={selectedLocation}
+                  selectedDate={selectedDate}
+                  onLocationChange={setSelectedLocation}
+                  onDateChange={setSelectedDate}
+                />
 
-                <div className="space-y-1.5">
-                  <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#546079]">
-                    Shoot date
-                  </span>
-                  <div className="relative flex items-center rounded-2xl border border-[#E1E7F2] bg-[#E1E7F2] px-3.5 py-2.5">
-                    <svg
-                      className="mr-3 h-4 w-4 text-[#7D97B6]"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1.5}
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
-                    <input
-                      type="date"
-                      min={today}
-                      value={selectedDate}
-                      onChange={(event) => setSelectedDate(event.target.value)}
-                      className="w-full bg-transparent text-sm font-semibold text-[#162533] outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex flex-col justify-end md:pt-4">
+                <div className="flex flex-col justify-end md:pt-6">
                   <motion.button
                     type="button"
                     onClick={handleFindPhotographer}
@@ -342,7 +268,7 @@ const HeroSection = ({ session }: { session: unknown }) => {
             </motion.div>
 
             <motion.div
-              className="mt-8 flex flex-wrap items-center gap-4"
+              className="relative z-[5] mt-8 flex flex-wrap items-center gap-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 1.0 }}
@@ -374,7 +300,7 @@ const HeroSection = ({ session }: { session: unknown }) => {
           </div>
 
           <motion.div
-            className="relative"
+            className="relative z-[1]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.5 }}
