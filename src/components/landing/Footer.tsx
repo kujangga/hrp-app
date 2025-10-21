@@ -59,6 +59,12 @@ const socialLinks = [
   },
 ]
 
+const getAosProps = (animation: string, delay = 0, anchorPlacement = 'center-bottom') => ({
+  'data-aos': animation,
+  'data-aos-delay': delay,
+  'data-aos-anchor-placement': anchorPlacement,
+})
+
 export default function Footer() {
   const currentYear = new Date().getFullYear()
   const [ref, inView] = useInView({
@@ -68,52 +74,31 @@ export default function Footer() {
 
   useEffect(() => {
     AOS.init({
-      duration: 800,
-      easing: 'ease-out-cubic',
+      duration: 300,
+      easing: 'ease-out',
       once: true,
       offset: 50,
-      delay: 100,
+      mirror: false,
+      debounceDelay: 50,
     })
   }, [])
+
+  useEffect(() => {
+    if (!inView) return
+    const refreshTimeout = window.setTimeout(() => AOS.refreshHard(), 120)
+    return () => window.clearTimeout(refreshTimeout)
+  }, [inView])
 
   return (
     <footer 
       ref={ref}
       className="relative overflow-hidden bg-gradient-to-b from-[#0f1924] to-[#0a1219]"
     >
-      {/* Animated Background Elements */}
-      <motion.div
-        className="absolute inset-0 opacity-30"
-        initial={{ opacity: 0 }}
-        animate={inView ? { opacity: 0.3 } : {}}
-        transition={{ duration: 1.2 }}
-      >
-        <motion.div
-          className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-gradient-to-br from-[#7D97B6]/20 to-transparent blur-3xl"
-          animate={inView ? {
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3],
-          } : {}}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        <motion.div
-          className="absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-gradient-to-tl from-[#162533]/20 to-transparent blur-3xl"
-          animate={inView ? {
-            scale: [1, 1.3, 1],
-            opacity: [0.2, 0.4, 0.2],
-          } : {}}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1
-          }}
-        />
-      </motion.div>
+      {/* Simplified Background */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-gradient-to-br from-[#7D97B6]/30 to-transparent blur-3xl" />
+        <div className="absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-gradient-to-tl from-[#162533]/30 to-transparent blur-3xl" />
+      </div>
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 pb-8">
         {/* Main Footer Grid */}
@@ -121,20 +106,16 @@ export default function Footer() {
           {/* Brand Section - Larger column */}
           <motion.div
             className="lg:col-span-5"
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            whileHover={{ scale: 1.01 }}
-            data-aos="fade-right"
-            data-aos-duration="1000"
+            transition={{ duration: 0.3, delay: 0 }}
+            {...getAosProps('fade-up', 0)}
           >
             <div className="space-y-5">
               {/* Logo */}
               <Link 
                 href="/"
                 className="group inline-block"
-                data-aos="zoom-in"
-                data-aos-delay="200"
               >
                 <motion.h3 
                   className="text-3xl font-bold tracking-wider text-white transition-all"
@@ -154,26 +135,23 @@ export default function Footer() {
                 initial={{ opacity: 0 }}
                 animate={inView ? { opacity: 0.7 } : {}}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                data-aos="fade-up"
-                data-aos-delay="300"
               >
                 Your trusted platform for professional photography services. We connect you with talented photographers, premium equipment, and reliable transportation—all in one place.
               </motion.p>
 
               {/* Social Links */}
-              <div 
+              <div
                 className="flex gap-3 pt-2"
-                data-aos="fade-up"
-                data-aos-delay="400"
+                {...getAosProps('fade-up', 30)}
               >
                 {socialLinks.map((social, index) => {
                   const Icon = social.icon
                   return (
                     <motion.div
                       key={social.label}
-                      initial={{ opacity: 0, scale: 0.8 }}
+                      initial={{ opacity: 0, scale: 0.9 }}
                       animate={inView ? { opacity: 1, scale: 1 } : {}}
-                      transition={{ duration: 0.3, delay: 0.3 + index * 0.1 }}
+                      transition={{ duration: 0.2, delay: 0.1 + index * 0.05 }}
                     >
                       <Magnet>
                         <motion.a
@@ -209,19 +187,16 @@ export default function Footer() {
             <div className="grid grid-cols-1 gap-10 sm:grid-cols-3">
               {/* Services Column */}
               <motion.div
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                data-aos="fade-up"
-                data-aos-delay="200"
+                transition={{ duration: 0.3, delay: 0.05 }}
+                {...getAosProps('fade-up', 30)}
               >
                 <motion.h4 
                   className="mb-5 text-sm font-bold uppercase tracking-wider text-white"
                   initial={{ opacity: 0, x: -20 }}
                   animate={inView ? { opacity: 1, x: 0 } : {}}
                   transition={{ duration: 0.5, delay: 0.25 }}
-                  data-aos="fade-right"
-                  data-aos-delay="300"
                 >
                   Services
                 </motion.h4>
@@ -233,8 +208,6 @@ export default function Footer() {
                       animate={inView ? { opacity: 1, x: 0 } : {}}
                       transition={{ duration: 0.3, delay: 0.3 + index * 0.05 }}
                       whileHover={{ x: 5 }}
-                      data-aos="fade-left"
-                      data-aos-delay={400 + index * 100}
                     >
                       <Link
                         href={link.href}
@@ -254,19 +227,16 @@ export default function Footer() {
 
               {/* Company Column */}
               <motion.div
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                data-aos="fade-up"
-                data-aos-delay="400"
+                transition={{ duration: 0.3, delay: 0.1 }}
+                {...getAosProps('fade-up', 60)}
               >
                 <motion.h4 
                   className="mb-5 text-sm font-bold uppercase tracking-wider text-white"
                   initial={{ opacity: 0, x: -20 }}
                   animate={inView ? { opacity: 1, x: 0 } : {}}
                   transition={{ duration: 0.5, delay: 0.35 }}
-                  data-aos="fade-right"
-                  data-aos-delay="500"
                 >
                   Company
                 </motion.h4>
@@ -278,8 +248,6 @@ export default function Footer() {
                       animate={inView ? { opacity: 1, x: 0 } : {}}
                       transition={{ duration: 0.3, delay: 0.4 + index * 0.05 }}
                       whileHover={{ x: 5 }}
-                      data-aos="fade-left"
-                      data-aos-delay={600 + index * 100}
                     >
                       <Link
                         href={link.href}
@@ -299,19 +267,16 @@ export default function Footer() {
 
               {/* Support Column */}
               <motion.div
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                data-aos="fade-up"
-                data-aos-delay="600"
+                transition={{ duration: 0.3, delay: 0.15 }}
+                {...getAosProps('fade-up', 90)}
               >
                 <motion.h4 
                   className="mb-5 text-sm font-bold uppercase tracking-wider text-white"
                   initial={{ opacity: 0, x: -20 }}
                   animate={inView ? { opacity: 1, x: 0 } : {}}
                   transition={{ duration: 0.5, delay: 0.45 }}
-                  data-aos="fade-right"
-                  data-aos-delay="700"
                 >
                   Support
                 </motion.h4>
@@ -323,8 +288,6 @@ export default function Footer() {
                       animate={inView ? { opacity: 1, x: 0 } : {}}
                       transition={{ duration: 0.3, delay: 0.5 + index * 0.05 }}
                       whileHover={{ x: 5 }}
-                      data-aos="fade-left"
-                      data-aos-delay={800 + index * 100}
                     >
                       <Link
                         href={link.href}
@@ -348,18 +311,16 @@ export default function Footer() {
         {/* Newsletter Section */}
         <motion.div
           className="mt-16 border-t border-white/10 pt-12"
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          data-aos="fade-up"
-          data-aos-delay="800"
+          transition={{ duration: 0.3, delay: 0.2 }}
+          {...getAosProps('fade-up', 60)}
         >
           <div className="mx-auto max-w-2xl">
             {/* Badge */}
-            <div 
+            <div
               className="mb-4 text-center"
-              data-aos="zoom-in"
-              data-aos-delay="900"
+              {...getAosProps('fade', 0)}
             >
               <motion.div
                 className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wider"
@@ -391,8 +352,6 @@ export default function Footer() {
               initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.65 }}
-              data-aos="fade-up"
-              data-aos-delay="1000"
             >
               Get Photography Tips & Exclusive Offers
             </motion.h4>
@@ -401,19 +360,16 @@ export default function Footer() {
               initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 0.6, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.7 }}
-              data-aos="fade-up"
-              data-aos-delay="1100"
             >
               Subscribe to our newsletter for the latest updates and special promotions
             </motion.p>
             
-            <motion.form 
+            <motion.form
               className="flex flex-col gap-3 sm:flex-row"
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.98 }}
               animate={inView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.5, delay: 0.75 }}
-              data-aos="zoom-in"
-              data-aos-delay="1200"
+              transition={{ duration: 0.3, delay: 0.25 }}
+              {...getAosProps('fade', 0)}
             >
               <motion.div 
                 className="relative flex-1"
@@ -451,9 +407,8 @@ export default function Footer() {
           className="mt-12 border-t border-white/10 pt-8"
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.6, delay: 0.7 }}
-          data-aos="fade-up"
-          data-aos-delay="1400"
+          transition={{ duration: 0.3, delay: 0.25 }}
+          {...getAosProps('fade-up', 90)}
         >
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <motion.p 
@@ -461,15 +416,12 @@ export default function Footer() {
               initial={{ opacity: 0, y: 10 }}
               animate={inView ? { opacity: 0.5, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.75 }}
-              data-aos="fade-right"
-              data-aos-delay="1500"
             >
               © {currentYear} HRP. All rights reserved.
             </motion.p>
-            <div 
+            <div
               className="flex flex-wrap justify-center gap-6"
-              data-aos="fade-left"
-              data-aos-delay="1500"
+              {...getAosProps('fade', 0)}
             >
               {['Privacy', 'Terms', 'Cookies', 'Sitemap'].map((item, index) => (
                 <motion.div
