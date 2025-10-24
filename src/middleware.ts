@@ -4,7 +4,8 @@ export const config = {
   matcher: [
     '/dashboard/:path*',
     '/admin/:path*',
-    '/photographer/:path*',
+    '/photographer/dashboard/:path*',
+    '/videographer/dashboard/:path*',
     '/booking/:path*'
   ]
 }
