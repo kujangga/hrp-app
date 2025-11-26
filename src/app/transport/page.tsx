@@ -3,9 +3,29 @@
 import React, { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { WaveDivider } from '@/components/ui/wave-divider';
+import { LocationDateWidget } from '@/components/landing/LocationDateWidget';
+import { COLORS } from '@/lib/colors';
+import Footer from '@/components/landing/Footer';
+import {
+  Truck,
+  CheckCircle2,
+  Star,
+  Shield,
+  Lock,
+  Zap,
+  Users,
+  MapPin,
+  Clock
+} from 'lucide-react';
 
 const TransportPage = () => {
+  const router = useRouter();
   const { data: session } = useSession();
+  const [selectedLocation, setSelectedLocation] = useState<string>('');
+  const [selectedDate, setSelectedDate] = useState<string>('');
   
   const vehicleTypes = [
     {
@@ -149,169 +169,487 @@ const TransportPage = () => {
     }));
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-purple-50">
-      {/* Hero Section */}
-      <section className="py-16 px-4 bg-gradient-to-r from-indigo-600 to-purple-700 text-white">
-        <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Team Transport Services</h1>
-          <p className="text-xl text-indigo-100 mb-8 max-w-3xl mx-auto">
-            Reliable and professional transportation services for your photography and videography crews. 
-            Safe, punctual, and comfortable transport for your team and equipment.
-          </p>
-          <div className="flex justify-center space-x-4">
-            <Link 
-              href="/#services" 
-              className="bg-white text-indigo-600 font-semibold py-3 px-6 rounded-lg hover:bg-gray-100 transition duration-300"
-            >
-              View Vehicles
-            </Link>
-            <Link 
-              href="/#calculate" 
-              className="bg-transparent border-2 border-white text-white font-semibold py-3 px-6 rounded-lg hover:bg-white hover:text-indigo-600 transition duration-300"
-            >
-              Calculate Cost
-            </Link>
-          </div>
-        </div>
-      </section>
+  const handleFindTransport = () => {
+    if (!selectedLocation || !selectedDate) {
+      alert('Please select both a location and a date to continue');
+      return;
+    }
+    router.push(`/transport/search?location=${encodeURIComponent(selectedLocation)}&date=${selectedDate}`);
+  };
 
-      {/* Stats Section */}
-      <section className="py-12 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-            <div className="p-6">
-              <div className="text-4xl font-bold text-indigo-600 mb-2">200+</div>
-              <div className="text-gray-600">Vehicles Available</div>
+  const TRANSPORT_STATS = [
+    { value: '200+', label: 'Vehicles Available', icon: Truck },
+    { value: '12K+', label: 'Successful Trips', icon: CheckCircle2 },
+    { value: '99.2%', label: 'On-Time Arrival', icon: Clock },
+    { value: '4.9/5', label: 'Customer Rating', icon: Star },
+  ];
+
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#0a1219] via-[#0f1924] to-[#162533]">
+        {/* Animated Gradient Orbs */}
+        <div className="absolute inset-0 overflow-hidden">
+          <motion.div
+            className="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-[#7D97B6]/10 blur-3xl"
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.3, 0.5, 0.3],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.div
+            className="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-[#E1E7F2]/5 blur-3xl"
+            animate={{
+              scale: [1.2, 1, 1.2],
+              opacity: [0.2, 0.4, 0.2],
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.div
+            className="absolute top-1/2 left-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#7D97B6]/5 blur-3xl"
+            animate={{
+              scale: [1, 1.3, 1],
+              opacity: [0.2, 0.3, 0.2],
+            }}
+            transition={{
+              duration: 12,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+        </div>
+
+        {/* Wave Divider */}
+        <WaveDivider position="bottom" color={COLORS.POWDER_LIGHT} />
+
+        <div className="relative mx-auto flex h-full w-full max-w-7xl items-center px-4 pt-24 pb-[120px] sm:px-6 lg:px-8 lg:pt-32">
+          {/* 2-COLUMN LAYOUT */}
+          <div className="grid w-full gap-8 lg:grid-cols-[1fr_auto] lg:gap-12">
+
+            {/* Left Column - Content */}
+            <div className="flex flex-col justify-center">
+              {/* Badge */}
+              <motion.div
+                className="inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.35em] text-[#7D97B6]"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                Transport • Professional Drivers • Safe Journey
+              </motion.div>
+
+              {/* Main Title */}
+              <motion.h1
+                className="mt-10 max-w-xl text-[clamp(2.5rem,5vw,4rem)] font-bold leading-[1.1] tracking-tight text-white"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
+              >
+                Book Professional
+                <br />
+                <span className="bg-gradient-to-r from-[#7D97B6] via-[#E1E7F2] to-[#7D97B6] bg-clip-text text-transparent">
+                  Transport
+                </span>{' '}
+                Services
+              </motion.h1>
+
+              {/* Description */}
+              <motion.p
+                className="mt-5 max-w-lg text-base leading-relaxed text-white/70"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                Reliable and professional transportation services for your photography and videography crews. 
+                Safe, punctual, and comfortable transport for your team and equipment.
+              </motion.p>
+
+              {/* Compact Stats Row */}
+              <motion.div
+                className="mt-6 flex flex-wrap gap-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
+                {TRANSPORT_STATS.map((stat, index) => {
+                  const Icon = stat.icon;
+                  return (
+                    <div key={index} className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#7D97B6]/20">
+                        <Icon className="h-5 w-5 text-[#7D97B6]" />
+                      </div>
+                      <div>
+                        <div className="text-xl font-bold text-white">{stat.value}</div>
+                        <div className="text-xs text-white/60">{stat.label}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </motion.div>
+
+              {/* Vehicle Types - Compact */}
+              <motion.div
+                className="mt-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
+                <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-white/50">
+                  Vehicle Types Available
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {vehicleTypes.slice(0, 4).map((vehicle, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      className="group flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 backdrop-blur-sm transition-all hover:border-[#7D97B6]/50 hover:bg-[#7D97B6]/20"
+                    >
+                      <Truck className="h-3 w-3 transition-transform group-hover:scale-110" />
+                      <span>{vehicle.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
             </div>
-            <div className="p-6">
-              <div className="text-4xl font-bold text-indigo-600 mb-2">12K+</div>
-              <div className="text-gray-600">Successful Trips</div>
-            </div>
-            <div className="p-6">
-              <div className="text-4xl font-bold text-indigo-600 mb-2">99.2%</div>
-              <div className="text-gray-600">On-Time Arrival</div>
-            </div>
-            <div className="p-6">
-              <div className="text-4xl font-bold text-indigo-600 mb-2">4.9/5</div>
-              <div className="text-gray-600">Customer Rating</div>
-            </div>
+
+            {/* Right Column - Search Card */}
+            <motion.div
+              className="flex items-center lg:w-[500px]"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+            >
+              <div className="w-full rounded-3xl border border-white/10 bg-white/95 p-8 shadow-2xl backdrop-blur-xl">
+                <div className="mb-6">
+                  <h3 className="text-xl font-bold text-[#162533]">Find Transport</h3>
+                  <p className="mt-2 text-sm text-[#546079]">
+                    Select location and date to see available vehicles
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <LocationDateWidget
+                    selectedLocation={selectedLocation}
+                    selectedDate={selectedDate}
+                    onLocationChange={setSelectedLocation}
+                    onDateChange={setSelectedDate}
+                  />
+                </div>
+
+                <motion.button
+                  type="button"
+                  onClick={handleFindTransport}
+                  className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#162533] to-[#0f1924] px-6 py-4 text-sm font-semibold text-white shadow-lg shadow-[#162533]/30 transition-all hover:shadow-xl"
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Truck className="h-5 w-5" />
+                  <span>Search Transport</span>
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </motion.button>
+
+                <div className="mt-6 space-y-3 border-t border-[#E1E7F2] pt-6">
+                  <div className="flex items-center gap-3">
+                    <div className="flex -space-x-2">
+                      {['AP', 'SR', 'BS'].map((initials) => (
+                        <div
+                          key={initials}
+                          className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-gradient-to-br from-[#7D97B6] to-[#546079] text-xs font-bold text-white shadow-md"
+                        >
+                          {initials}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-1">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="h-3.5 w-3.5 fill-[#7D97B6] text-[#7D97B6]" />
+                        ))}
+                        <span className="ml-1 text-sm font-semibold text-[#162533]">4.9</span>
+                      </div>
+                      <p className="text-xs text-[#546079]">Trusted by 12,000+ clients</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 rounded-xl border border-[#7D97B6]/30 bg-[#7D97B6]/10 px-4 py-2.5 text-xs font-semibold text-[#162533]">
+                    <CheckCircle2 className="h-4 w-4 text-[#7D97B6]" />
+                    99.2% on-time arrival guaranteed
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
           </div>
         </div>
       </section>
 
       {/* Key Benefits */}
-      <section id="benefits" className="py-16 px-4 bg-gradient-to-b from-white to-purple-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+      <section id="benefits" className="relative overflow-hidden py-16 lg:py-24" style={{ backgroundColor: COLORS.POWDER_LIGHT }}>
+        <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-12 text-center">
+            <motion.div
+              className="mb-3 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wider"
+              style={{ color: COLORS.BLUE_LIGHT }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              Why Choose Us
+            </motion.div>
+
+            <motion.h2
+              className="mb-4 text-[clamp(1.875rem,3.5vw,2.5rem)] font-bold tracking-tight"
+              style={{ color: COLORS.NAVY_DARK }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+            >
               Why Choose Our Transport Services?
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            </motion.h2>
+
+            <motion.p
+              className="mx-auto max-w-2xl text-base"
+              style={{ color: COLORS.SLATE_MEDIUM }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+            >
               Professional, reliable, and efficient transport solutions for your team
-            </p>
+            </motion.p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
             {benefits.map((benefit, index) => (
-              <div key={index} className="bg-white rounded-xl shadow-lg p-6 text-center border border-gray-100 hover:shadow-xl transition duration-300">
-                <div className="flex justify-center mb-4">
-                  {benefit.icon}
+              <motion.div
+                key={index}
+                className="group relative h-full"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <div className="relative h-full rounded-2xl bg-white p-7 text-center shadow-md transition-all duration-300 hover:shadow-xl">
+                  <div
+                    className="mb-5 inline-flex h-16 w-16 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-105"
+                    style={{ backgroundColor: `${COLORS.BLUE_LIGHT}15` }}
+                  >
+                    <div style={{ color: COLORS.BLUE_LIGHT }}>
+                      {benefit.icon}
+                    </div>
+                  </div>
+                  <h3 className="mb-3 text-xl font-bold" style={{ color: COLORS.NAVY_DARK }}>
+                    {benefit.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed" style={{ color: COLORS.SLATE_MEDIUM }}>
+                    {benefit.description}
+                  </p>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{benefit.title}</h3>
-                <p className="text-gray-600">{benefit.description}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
+
+        {/* Wave Divider */}
+        <WaveDivider position="bottom" color="#ffffff" />
       </section>
 
       {/* Vehicle Types */}
-      <section id="services" className="py-16 px-4 bg-white">
+      <section id="services" className="py-16 px-4 lg:py-24 bg-white">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <div className="mb-12 text-center">
+            <motion.div
+              className="mb-3 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wider"
+              style={{ color: COLORS.BLUE_LIGHT }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4 }}
+            >
+              Our Fleet
+            </motion.div>
+
+            <motion.h2
+              className="mb-4 text-[clamp(1.875rem,3.5vw,2.5rem)] font-bold tracking-tight"
+              style={{ color: COLORS.NAVY_DARK }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+            >
               Our Vehicle Fleet
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            </motion.h2>
+
+            <motion.p
+              className="mx-auto max-w-2xl text-base"
+              style={{ color: COLORS.SLATE_MEDIUM }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+            >
               Choose from our diverse range of vehicles to match your specific needs
-            </p>
+            </motion.p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {vehicleTypes.map((vehicle) => (
-              <div key={vehicle.id} className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition duration-300">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {vehicleTypes.map((vehicle, index) => (
+              <motion.div
+                key={vehicle.id}
+                className="group overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:shadow-xl"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
                 <div className="p-6">
-                  <div className="text-center mb-4">
-                    <div className="text-5xl mb-2">{vehicle.icon}</div>
-                    <h3 className="text-xl font-bold text-gray-900">{vehicle.name}</h3>
-                    <p className="text-gray-600">{vehicle.capacity}</p>
+                  <div className="mb-6 text-center">
+                    <div className="mb-3 text-5xl">{vehicle.icon}</div>
+                    <h3 className="mb-1 text-xl font-bold" style={{ color: COLORS.NAVY_DARK }}>
+                      {vehicle.name}
+                    </h3>
+                    <p className="text-sm" style={{ color: COLORS.SLATE_MEDIUM }}>
+                      {vehicle.capacity}
+                    </p>
                   </div>
                   <div className="mb-4">
-                    <p className="text-gray-700 text-sm mb-3">{vehicle.description}</p>
-                    <p className="text-2xl font-bold text-indigo-600 mb-3">{vehicle.price}</p>
+                    <p className="mb-3 text-sm" style={{ color: COLORS.SLATE_MEDIUM }}>
+                      {vehicle.description}
+                    </p>
+                    <p className="mb-3 text-2xl font-bold" style={{ color: COLORS.BLUE_LIGHT }}>
+                      {vehicle.price}
+                    </p>
                   </div>
-                  <ul className="space-y-2 mb-6">
-                    {vehicle.features.map((feature, index) => (
-                      <li key={index} className="flex items-center">
-                        <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
+                  <ul className="mb-6 space-y-2">
+                    {vehicle.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-center text-sm" style={{ color: COLORS.SLATE_MEDIUM }}>
+                        <CheckCircle2 className="mr-2 h-4 w-4" style={{ color: COLORS.BLUE_LIGHT }} />
                         {feature}
                       </li>
                     ))}
                   </ul>
-                  <button className="w-full bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-medium py-2 px-4 rounded-lg transition duration-300">
+                  <motion.button
+                    type="button"
+                    className="w-full rounded-xl py-3 font-medium transition-all"
+                    style={{ 
+                      backgroundColor: `${COLORS.BLUE_LIGHT}15`, 
+                      color: COLORS.BLUE_LIGHT 
+                    }}
+                    whileHover={{ scale: 1.02, backgroundColor: COLORS.BLUE_LIGHT, color: '#ffffff' }}
+                    whileTap={{ scale: 0.98 }}
+                  >
                     Book Now
-                  </button>
+                  </motion.button>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
       {/* Cost Calculator */}
-      <section id="calculate" className="py-16 px-4 bg-gradient-to-b from-purple-50 to-white">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+      <section id="calculate" className="relative overflow-hidden py-16 lg:py-24" style={{ backgroundColor: COLORS.POWDER_LIGHT }}>
+        <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-12 text-center">
+            <motion.div
+              className="mb-3 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wider"
+              style={{ color: COLORS.BLUE_LIGHT }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4 }}
+            >
+              Cost Calculator
+            </motion.div>
+
+            <motion.h2
+              className="mb-4 text-[clamp(1.875rem,3.5vw,2.5rem)] font-bold tracking-tight"
+              style={{ color: COLORS.NAVY_DARK }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+            >
               Calculate Your Transport Cost
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            </motion.h2>
+
+            <motion.p
+              className="mx-auto max-w-2xl text-base"
+              style={{ color: COLORS.SLATE_MEDIUM }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+            >
               Get an instant estimate for your transport needs
-            </p>
+            </motion.p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-xl p-8 mb-10">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <motion.div
+            className="mb-10 rounded-3xl bg-white p-8 shadow-2xl"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">From Location</label>
+                <label className="mb-2 block text-sm font-medium" style={{ color: COLORS.NAVY_DARK }}>
+                  From Location
+                </label>
                 <input 
                   type="text" 
                   name="from"
                   placeholder="Departure city or address" 
-                  className="w-full bg-gray-50 border border-gray-300 rounded-lg py-3 px-4 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full rounded-xl border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#7D97B6]"
+                  style={{ 
+                    backgroundColor: COLORS.POWDER_LIGHT,
+                    borderColor: COLORS.SLATE_MEDIUM + '40',
+                    color: COLORS.NAVY_DARK
+                  }}
                   value={costCalculation.from}
                   onChange={handleInputChange}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">To Location</label>
+                <label className="mb-2 block text-sm font-medium" style={{ color: COLORS.NAVY_DARK }}>
+                  To Location
+                </label>
                 <input 
                   type="text" 
                   name="to"
                   placeholder="Destination city or address" 
-                  className="w-full bg-gray-50 border border-gray-300 rounded-lg py-3 px-4 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full rounded-xl border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#7D97B6]"
+                  style={{ 
+                    backgroundColor: COLORS.POWDER_LIGHT,
+                    borderColor: COLORS.SLATE_MEDIUM + '40',
+                    color: COLORS.NAVY_DARK
+                  }}
                   value={costCalculation.to}
                   onChange={handleInputChange}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Team Size</label>
+                <label className="mb-2 block text-sm font-medium" style={{ color: COLORS.NAVY_DARK }}>
+                  Team Size
+                </label>
                 <select 
                   name="teamSize"
-                  className="w-full bg-gray-50 border border-gray-300 rounded-lg py-3 px-4 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full rounded-xl border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#7D97B6]"
+                  style={{ 
+                    backgroundColor: COLORS.POWDER_LIGHT,
+                    borderColor: COLORS.SLATE_MEDIUM + '40',
+                    color: COLORS.NAVY_DARK
+                  }}
                   value={costCalculation.teamSize}
                   onChange={handleInputChange}
                 >
@@ -322,10 +660,17 @@ const TransportPage = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Vehicle Type</label>
+                <label className="mb-2 block text-sm font-medium" style={{ color: COLORS.NAVY_DARK }}>
+                  Vehicle Type
+                </label>
                 <select 
                   name="vehicleType"
-                  className="w-full bg-gray-50 border border-gray-300 rounded-lg py-3 px-4 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full rounded-xl border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#7D97B6]"
+                  style={{ 
+                    backgroundColor: COLORS.POWDER_LIGHT,
+                    borderColor: COLORS.SLATE_MEDIUM + '40',
+                    color: COLORS.NAVY_DARK
+                  }}
                   value={costCalculation.vehicleType}
                   onChange={handleInputChange}
                 >
@@ -339,158 +684,263 @@ const TransportPage = () => {
               </div>
             </div>
 
-            <div className="text-center mb-8">
+            <div className="mb-8 text-center">
               {isCalculated ? (
-                <div className="bg-indigo-50 rounded-lg p-6">
-                  <p className="text-gray-600 mb-2">Estimated Cost:</p>
-                  <p className="text-3xl font-bold text-indigo-600">Rp {calculatedCost.toLocaleString()}</p>
-                  <p className="text-gray-500 text-sm mt-2">Price may vary based on actual distance and requirements</p>
+                <div className="rounded-2xl p-6" style={{ backgroundColor: `${COLORS.BLUE_LIGHT}15` }}>
+                  <p className="mb-2" style={{ color: COLORS.SLATE_MEDIUM }}>
+                    Estimated Cost:
+                  </p>
+                  <p className="text-3xl font-bold" style={{ color: COLORS.BLUE_LIGHT }}>
+                    Rp {calculatedCost.toLocaleString()}
+                  </p>
+                  <p className="mt-2 text-sm" style={{ color: COLORS.SLATE_MEDIUM }}>
+                    Price may vary based on actual distance and requirements
+                  </p>
                 </div>
               ) : (
-                <p className="text-gray-500">Enter your details to get an estimate</p>
+                <p style={{ color: COLORS.SLATE_MEDIUM }}>
+                  Enter your details to get an estimate
+                </p>
               )}
             </div>
 
             <div className="text-center">
-              <button 
+              <motion.button 
+                type="button"
                 onClick={calculateCost}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg text-lg shadow-lg transition duration-300"
+                className="rounded-xl px-8 py-4 text-lg font-bold text-white shadow-lg transition-all hover:shadow-xl"
+                style={{ backgroundColor: COLORS.BLUE_LIGHT }}
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.98 }}
               >
                 Calculate Transport Cost
-              </button>
+              </motion.button>
             </div>
-          </div>
+          </motion.div>
         </div>
+
+        {/* Wave Divider */}
+        <WaveDivider position="bottom" color="#ffffff" />
       </section>
 
       {/* Testimonials */}
-      <section className="py-16 px-4 bg-white">
+      <section className="py-16 px-4 lg:py-24 bg-white">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <div className="mb-12 text-center">
+            <motion.div
+              className="mb-3 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wider"
+              style={{ color: COLORS.BLUE_LIGHT }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4 }}
+            >
+              Testimonials
+            </motion.div>
+
+            <motion.h2
+              className="mb-4 text-[clamp(1.875rem,3.5vw,2.5rem)] font-bold tracking-tight"
+              style={{ color: COLORS.NAVY_DARK }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+            >
               What Our Clients Say
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            </motion.h2>
+
+            <motion.p
+              className="mx-auto max-w-2xl text-base"
+              style={{ color: COLORS.SLATE_MEDIUM }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+            >
               Don't just take our word for it - hear from our satisfied clients
+            </motion.p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {[
+              {
+                name: 'Andi Pratama',
+                role: 'Wedding Photographer',
+                initials: 'AP',
+                text: 'The transport service was exceptional. Our crew arrived on time and comfortable. Highly recommend!'
+              },
+              {
+                name: 'Siti Rahma',
+                role: 'Event Videographer',
+                initials: 'SR',
+                text: 'Professional drivers and well-maintained vehicles made our multi-location shoot stress-free.'
+              },
+              {
+                name: 'Budi Santoso',
+                role: 'Commercial Director',
+                initials: 'BS',
+                text: 'Reliable and punctual. Exactly what we needed for our team during the corporate event.'
+              }
+            ].map((testimonial, index) => (
+              <motion.div
+                key={index}
+                className="rounded-2xl p-6"
+                style={{ backgroundColor: COLORS.POWDER_LIGHT }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <div className="mb-4 flex items-center">
+                  <div 
+                    className="flex h-16 w-16 items-center justify-center rounded-xl text-lg font-bold text-white"
+                    style={{ backgroundColor: COLORS.BLUE_LIGHT }}
+                  >
+                    {testimonial.initials}
+                  </div>
+                  <div className="ml-4">
+                    <h4 className="font-bold" style={{ color: COLORS.NAVY_DARK }}>
+                      {testimonial.name}
+                    </h4>
+                    <p className="text-sm" style={{ color: COLORS.SLATE_MEDIUM }}>
+                      {testimonial.role}
+                    </p>
+                  </div>
+                </div>
+                <p className="italic" style={{ color: COLORS.SLATE_MEDIUM }}>
+                  "{testimonial.text}"
+                </p>
+                <div className="mt-3 flex gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-5 w-5 fill-[#7D97B6] text-[#7D97B6]" />
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Trust Section + CTA */}
+      <section className="relative overflow-hidden py-16 lg:py-24" style={{ backgroundColor: COLORS.POWDER_LIGHT }}>
+        <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-16 grid grid-cols-1 gap-6 md:grid-cols-3">
+            <motion.div
+              className="group p-8 text-center"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <div
+                className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110"
+                style={{ backgroundColor: `${COLORS.BLUE_LIGHT}20` }}
+              >
+                <Shield className="h-8 w-8" style={{ color: COLORS.BLUE_LIGHT }} />
+              </div>
+              <h3 className="mb-3 text-xl font-bold" style={{ color: COLORS.NAVY_DARK }}>
+                Verified Drivers
+              </h3>
+              <p className="text-sm" style={{ color: COLORS.SLATE_MEDIUM }}>
+                All drivers are professionally licensed and background checked
+              </p>
+            </motion.div>
+
+            <motion.div
+              className="group p-8 text-center"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <div
+                className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110"
+                style={{ backgroundColor: `${COLORS.BLUE_LIGHT}20` }}
+              >
+                <Lock className="h-8 w-8" style={{ color: COLORS.BLUE_LIGHT }} />
+              </div>
+              <h3 className="mb-3 text-xl font-bold" style={{ color: COLORS.NAVY_DARK }}>
+                Secure Transport
+              </h3>
+              <p className="text-sm" style={{ color: COLORS.SLATE_MEDIUM }}>
+                All vehicles are equipped with safety features and insurance coverage
+              </p>
+            </motion.div>
+
+            <motion.div
+              className="group p-8 text-center"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <div
+                className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110"
+                style={{ backgroundColor: `${COLORS.BLUE_LIGHT}20` }}
+              >
+                <Zap className="h-8 w-8" style={{ color: COLORS.BLUE_LIGHT }} />
+              </div>
+              <h3 className="mb-3 text-xl font-bold" style={{ color: COLORS.NAVY_DARK }}>
+                Punctual Service
+              </h3>
+              <p className="text-sm" style={{ color: COLORS.SLATE_MEDIUM }}>
+                On-time arrival guaranteed with real-time tracking
+              </p>
+            </motion.div>
+          </div>
+
+          {/* CTA */}
+          <motion.div
+            className="text-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+          >
+            <h2 className="mb-4 text-3xl font-bold md:text-4xl" style={{ color: COLORS.NAVY_DARK }}>
+              Ready to Book Transport Services?
+            </h2>
+            <p className="mx-auto mb-8 max-w-2xl text-lg" style={{ color: COLORS.SLATE_MEDIUM }}>
+              Experience reliable and comfortable transport for your team and equipment.
             </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-gray-50 rounded-xl p-6">
-              <div className="flex items-center mb-4">
-                <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16" />
-                <div className="ml-4">
-                  <h4 className="font-bold text-gray-900">Andi Pratama</h4>
-                  <p className="text-gray-600">Wedding Photographer</p>
-                </div>
-              </div>
-              <p className="text-gray-700 italic">"The transport service was exceptional. Our crew arrived on time and comfortable. Highly recommend!"</p>
-              <div className="flex text-yellow-400 mt-2">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                  </svg>
-                ))}
-              </div>
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <motion.button
+                type="button"
+                onClick={() => router.push('/booking')}
+                className="rounded-full px-8 py-4 text-lg font-bold text-white shadow-lg transition-all hover:shadow-xl"
+                style={{ backgroundColor: COLORS.BLUE_LIGHT }}
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Book Transport Now
+              </motion.button>
+              <motion.button
+                type="button"
+                onClick={() => router.push('/contact')}
+                className="rounded-full border-2 px-8 py-4 text-lg font-bold transition-all"
+                style={{ 
+                  borderColor: COLORS.BLUE_LIGHT,
+                  color: COLORS.BLUE_LIGHT
+                }}
+                whileHover={{ 
+                  scale: 1.05, 
+                  y: -2,
+                  backgroundColor: COLORS.BLUE_LIGHT,
+                  color: '#ffffff'
+                }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Contact Support
+              </motion.button>
             </div>
-
-            <div className="bg-gray-50 rounded-xl p-6">
-              <div className="flex items-center mb-4">
-                <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16" />
-                <div className="ml-4">
-                  <h4 className="font-bold text-gray-900">Siti Rahma</h4>
-                  <p className="text-gray-600">Event Videographer</p>
-                </div>
-              </div>
-              <p className="text-gray-700 italic">"Professional drivers and well-maintained vehicles made our multi-location shoot stress-free."</p>
-              <div className="flex text-yellow-400 mt-2">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                  </svg>
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-gray-50 rounded-xl p-6">
-              <div className="flex items-center mb-4">
-                <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16" />
-                <div className="ml-4">
-                  <h4 className="font-bold text-gray-900">Budi Santoso</h4>
-                  <p className="text-gray-600">Commercial Director</p>
-                </div>
-              </div>
-              <p className="text-gray-700 italic">"Reliable and punctual. Exactly what we needed for our team during the corporate event."</p>
-              <div className="flex text-yellow-400 mt-2">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                  </svg>
-                ))}
-              </div>
-            </div>
-          </div>
+          </motion.div>
         </div>
+
+        {/* Wave Divider */}
+        <WaveDivider position="bottom" color="#ffffff" />
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16 px-4 bg-gradient-to-r from-indigo-600 to-purple-700 text-white">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Book Transport Services?</h2>
-          <p className="text-xl text-indigo-100 mb-8">
-            Experience reliable and comfortable transport for your team and equipment.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <Link 
-              href="/booking" 
-              className="bg-white text-indigo-600 font-bold py-4 px-8 rounded-lg text-lg hover:bg-gray-100 transition duration-300"
-            >
-              Book Transport Now
-            </Link>
-            <Link 
-              href="/contact" 
-              className="bg-transparent border-2 border-white text-white font-bold py-4 px-8 rounded-lg text-lg hover:bg-white hover:text-indigo-600 transition duration-300"
-            >
-              Contact Support
-            </Link>
-          </div>
-        </div>
-      </section>
-      
-      {/* Trust Section */}
-      <section className="py-16 px-4 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Verified Drivers</h3>
-              <p className="text-gray-600">All drivers are professionally licensed and background checked</p>
-            </div>
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Secure Transport</h3>
-              <p className="text-gray-600">All vehicles are equipped with safety features and insurance coverage</p>
-            </div>
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Punctual Service</h3>
-              <p className="text-gray-600">On-time arrival guaranteed with real-time tracking</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Footer />
     </div>
   );
 };
