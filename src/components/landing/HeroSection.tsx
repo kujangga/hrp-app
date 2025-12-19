@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type CSSProperties } from 'react'
 import { motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 import { WaveDivider } from '@/components/ui/wave-divider'
 import { LocationDateWidget } from '@/components/landing/LocationDateWidget'
 import { COLORS } from '@/lib/colors'
@@ -114,6 +115,7 @@ const GALLERY_TILES: GalleryTile[] = [
 ]
 
 const HeroSection = ({ session }: { session: unknown }) => {
+  const router = useRouter()
   const [selectedLocation, setSelectedLocation] = useState<string>('')
   const [selectedDate, setSelectedDate] = useState<string>('')
   const [photographerCount, setPhotographerCount] = useState<number>(1247)
@@ -133,15 +135,23 @@ const HeroSection = ({ session }: { session: unknown }) => {
       return
     }
 
-    alert(`Planning a shoot in ${selectedLocation} on ${selectedDate}.`)
+    // Build booking URL with location, date and type params (full booking from homepage)
+    const bookingUrl = `/booking/location-date?location=${encodeURIComponent(selectedLocation)}&date=${encodeURIComponent(selectedDate)}&type=full`
+    
+    // If not authenticated, redirect to signin with callback URL
+    if (!isAuthenticated) {
+      router.push(`/auth/signin?callbackUrl=${encodeURIComponent(bookingUrl)}`)
+    } else {
+      router.push(bookingUrl)
+    }
   }
 
   const handleJoinAsPhotographer = () => {
-    alert(
-      isAuthenticated
-        ? 'Opening photographer workspace'
-        : 'Navigating to photographer registration',
-    )
+    if (isAuthenticated) {
+      router.push('/photographer/dashboard')
+    } else {
+      router.push('/auth/register?role=PHOTOGRAPHER')
+    }
   }
 
   const today = new Date().toISOString().split('T')[0]

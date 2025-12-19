@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
@@ -10,6 +10,7 @@ import { Camera, Mail, Lock, ArrowRight, AlertCircle, CheckCircle2 } from 'lucid
 
 export default function SignIn() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
@@ -39,7 +40,9 @@ export default function SignIn() {
       setError('Invalid email or password')
       setLoading(false)
     } else {
-      router.push('/')
+      // Redirect to callbackUrl if provided, otherwise go to home
+      const callbackUrl = searchParams?.get('callbackUrl') || '/'
+      router.push(callbackUrl)
       router.refresh()
     }
   }

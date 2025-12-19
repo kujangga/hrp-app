@@ -26,7 +26,7 @@ const TransportPage = () => {
   const { data: session } = useSession();
   const [selectedLocation, setSelectedLocation] = useState<string>('');
   const [selectedDate, setSelectedDate] = useState<string>('');
-  
+
   const vehicleTypes = [
     {
       id: 1,
@@ -133,11 +133,29 @@ const TransportPage = () => {
 
   const [calculatedCost, setCalculatedCost] = useState(0);
   const [isCalculated, setIsCalculated] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const vehicleCategories = [
+    { id: 'all', name: 'All Vehicles' },
+    { id: 'van', name: 'Vans' },
+    { id: 'suv', name: 'SUVs' },
+    { id: 'sedan', name: 'Sedans' },
+    { id: 'cargo', name: 'Cargo' },
+    { id: 'motorcycle', name: 'Motorcycles' }
+  ];
+
+  const filteredVehicles = vehicleTypes.filter(vehicle => {
+    const categoryMatch = selectedCategory === 'all' || vehicle.name.toLowerCase().includes(selectedCategory);
+    const searchMatch = vehicle.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      vehicle.description.toLowerCase().includes(searchTerm.toLowerCase());
+    return categoryMatch && searchMatch;
+  });
 
   const calculateCost = () => {
     // Simple cost calculation logic (in a real app, this would be more complex)
     let baseCost = 0;
-    switch(costCalculation.vehicleType) {
+    switch (costCalculation.vehicleType) {
       case 'luxury-van': baseCost = 1200000; break;
       case 'professional-suv': baseCost = 850000; break;
       case 'cargo-transport': baseCost = 1500000; break;
@@ -149,12 +167,12 @@ const TransportPage = () => {
 
     // Distance-based cost factor
     const distanceFactor = costCalculation.from.toLowerCase() === costCalculation.to.toLowerCase() ? 1 : 1.5;
-    
+
     // Team size factor
-    const sizeFactor = 
-      costCalculation.teamSize === '1-3' ? 1 : 
-      costCalculation.teamSize === '4-6' ? 1.2 : 
-      costCalculation.teamSize === '7-10' ? 1.5 : 2;
+    const sizeFactor =
+      costCalculation.teamSize === '1-3' ? 1 :
+        costCalculation.teamSize === '4-6' ? 1.2 :
+          costCalculation.teamSize === '7-10' ? 1.5 : 2;
 
     const finalCost = baseCost * distanceFactor * sizeFactor;
     setCalculatedCost(Math.round(finalCost));
@@ -269,7 +287,7 @@ const TransportPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                Reliable and professional transportation services for your photography and videography crews. 
+                Reliable and professional transportation services for your photography and videography crews.
                 Safe, punctual, and comfortable transport for your team and equipment.
               </motion.p>
 
@@ -463,8 +481,146 @@ const TransportPage = () => {
         <WaveDivider position="bottom" color="#ffffff" />
       </section>
 
+      {/* Full Transport Fleet Inventory Section */}
+      <section id="fleet-inventory" className="py-16 px-4 lg:py-24 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-12 text-center">
+            <motion.div
+              className="mb-3 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wider"
+              style={{ color: COLORS.BLUE_LIGHT }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4 }}
+            >
+              Complete Fleet
+            </motion.div>
+
+            <motion.h2
+              className="mb-4 text-[clamp(1.875rem,3.5vw,2.5rem)] font-bold tracking-tight"
+              style={{ color: COLORS.NAVY_DARK }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+            >
+              Full Transport Fleet Inventory
+            </motion.h2>
+
+            <motion.p
+              className="mx-auto max-w-2xl text-base"
+              style={{ color: COLORS.SLATE_MEDIUM }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+            >
+              Browse our complete fleet of professional transport vehicles
+            </motion.p>
+          </div>
+
+          {/* Search and Filter */}
+          <motion.div
+            className="mb-8 flex flex-col md:flex-row justify-between items-center gap-4"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <div className="w-full md:w-1/3">
+              <input
+                type="text"
+                placeholder="Search vehicles..."
+                className="w-full rounded-xl border p-3 focus:outline-none focus:ring-2 focus:ring-[#7D97B6] transition-all"
+                style={{
+                  borderColor: COLORS.SLATE_MEDIUM + '40'
+                }}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {vehicleCategories.map((category) => (
+                <button
+                  key={category.id}
+                  className="rounded-full px-4 py-2 text-sm font-medium transition-all"
+                  style={{
+                    backgroundColor: selectedCategory === category.id ? COLORS.BLUE_LIGHT : COLORS.POWDER_LIGHT,
+                    color: selectedCategory === category.id ? '#ffffff' : COLORS.SLATE_MEDIUM
+                  }}
+                  onClick={() => setSelectedCategory(category.id)}
+                >
+                  {category.name}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Vehicle Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredVehicles.map((vehicle, index) => (
+              <motion.div
+                key={vehicle.id}
+                className="group overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:shadow-xl"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <div className="p-6">
+                  <div className="relative mb-4 flex aspect-square w-full items-center justify-center overflow-hidden rounded-xl border-2 border-dashed" style={{ borderColor: COLORS.BLUE_LIGHT, backgroundColor: COLORS.POWDER_LIGHT }}>
+                    <div className="text-center">
+                      <div className="text-6xl mb-2">{vehicle.icon}</div>
+                      <span className="text-sm font-semibold" style={{ color: COLORS.SLATE_MEDIUM }}>
+                        {vehicle.capacity}
+                      </span>
+                    </div>
+                  </div>
+                  <h3 className="mb-2 text-xl font-bold" style={{ color: COLORS.NAVY_DARK }}>
+                    {vehicle.name}
+                  </h3>
+                  <p className="mb-3 text-sm" style={{ color: COLORS.SLATE_MEDIUM }}>
+                    {vehicle.description}
+                  </p>
+                  <div className="mb-4 flex items-center justify-between">
+                    <p className="text-xl font-bold" style={{ color: COLORS.BLUE_LIGHT }}>
+                      {vehicle.price}
+                    </p>
+                    <motion.button
+                      type="button"
+                      className="rounded-lg px-4 py-2 font-medium transition-all"
+                      style={{
+                        backgroundColor: `${COLORS.BLUE_LIGHT}15`,
+                        color: COLORS.BLUE_LIGHT
+                      }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      View Details
+                    </motion.button>
+                  </div>
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-semibold" style={{ color: COLORS.NAVY_DARK }}>
+                      Features:
+                    </h4>
+                    <ul className="space-y-1">
+                      {vehicle.features.slice(0, 3).map((feature, idx) => (
+                        <li key={idx} className="flex items-center text-xs" style={{ color: COLORS.SLATE_MEDIUM }}>
+                          <CheckCircle2 className="mr-2 h-3 w-3" style={{ color: COLORS.BLUE_LIGHT }} />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Vehicle Types */}
-      <section id="services" className="py-16 px-4 lg:py-24 bg-white">
+      <section id="services" className="py-16 px-4 lg:py-24 bg-white" style={{ backgroundColor: COLORS.POWDER_LIGHT }}>
         <div className="max-w-6xl mx-auto">
           <div className="mb-12 text-center">
             <motion.div
@@ -540,9 +696,9 @@ const TransportPage = () => {
                   <motion.button
                     type="button"
                     className="w-full rounded-xl py-3 font-medium transition-all"
-                    style={{ 
-                      backgroundColor: `${COLORS.BLUE_LIGHT}15`, 
-                      color: COLORS.BLUE_LIGHT 
+                    style={{
+                      backgroundColor: `${COLORS.BLUE_LIGHT}15`,
+                      color: COLORS.BLUE_LIGHT
                     }}
                     whileHover={{ scale: 1.02, backgroundColor: COLORS.BLUE_LIGHT, color: '#ffffff' }}
                     whileTap={{ scale: 0.98 }}
@@ -606,12 +762,12 @@ const TransportPage = () => {
                 <label className="mb-2 block text-sm font-medium" style={{ color: COLORS.NAVY_DARK }}>
                   From Location
                 </label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   name="from"
-                  placeholder="Departure city or address" 
+                  placeholder="Departure city or address"
                   className="w-full rounded-xl border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#7D97B6]"
-                  style={{ 
+                  style={{
                     backgroundColor: COLORS.POWDER_LIGHT,
                     borderColor: COLORS.SLATE_MEDIUM + '40',
                     color: COLORS.NAVY_DARK
@@ -624,12 +780,12 @@ const TransportPage = () => {
                 <label className="mb-2 block text-sm font-medium" style={{ color: COLORS.NAVY_DARK }}>
                   To Location
                 </label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   name="to"
-                  placeholder="Destination city or address" 
+                  placeholder="Destination city or address"
                   className="w-full rounded-xl border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#7D97B6]"
-                  style={{ 
+                  style={{
                     backgroundColor: COLORS.POWDER_LIGHT,
                     borderColor: COLORS.SLATE_MEDIUM + '40',
                     color: COLORS.NAVY_DARK
@@ -642,10 +798,10 @@ const TransportPage = () => {
                 <label className="mb-2 block text-sm font-medium" style={{ color: COLORS.NAVY_DARK }}>
                   Team Size
                 </label>
-                <select 
+                <select
                   name="teamSize"
                   className="w-full rounded-xl border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#7D97B6]"
-                  style={{ 
+                  style={{
                     backgroundColor: COLORS.POWDER_LIGHT,
                     borderColor: COLORS.SLATE_MEDIUM + '40',
                     color: COLORS.NAVY_DARK
@@ -663,10 +819,10 @@ const TransportPage = () => {
                 <label className="mb-2 block text-sm font-medium" style={{ color: COLORS.NAVY_DARK }}>
                   Vehicle Type
                 </label>
-                <select 
+                <select
                   name="vehicleType"
                   className="w-full rounded-xl border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#7D97B6]"
-                  style={{ 
+                  style={{
                     backgroundColor: COLORS.POWDER_LIGHT,
                     borderColor: COLORS.SLATE_MEDIUM + '40',
                     color: COLORS.NAVY_DARK
@@ -705,7 +861,7 @@ const TransportPage = () => {
             </div>
 
             <div className="text-center">
-              <motion.button 
+              <motion.button
                 type="button"
                 onClick={calculateCost}
                 className="rounded-xl px-8 py-4 text-lg font-bold text-white shadow-lg transition-all hover:shadow-xl"
@@ -792,7 +948,7 @@ const TransportPage = () => {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
                 <div className="mb-4 flex items-center">
-                  <div 
+                  <div
                     className="flex h-16 w-16 items-center justify-center rounded-xl text-lg font-bold text-white"
                     style={{ backgroundColor: COLORS.BLUE_LIGHT }}
                   >
@@ -918,12 +1074,12 @@ const TransportPage = () => {
                 type="button"
                 onClick={() => router.push('/contact')}
                 className="rounded-full border-2 px-8 py-4 text-lg font-bold transition-all"
-                style={{ 
+                style={{
                   borderColor: COLORS.BLUE_LIGHT,
                   color: COLORS.BLUE_LIGHT
                 }}
-                whileHover={{ 
-                  scale: 1.05, 
+                whileHover={{
+                  scale: 1.05,
                   y: -2,
                   backgroundColor: COLORS.BLUE_LIGHT,
                   color: '#ffffff'

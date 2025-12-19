@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
@@ -10,6 +10,7 @@ import { Camera, Mail, Lock, User, ArrowRight, AlertCircle, CheckCircle2, Users 
 
 export default function Register() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<boolean>(false)
@@ -19,6 +20,16 @@ export default function Register() {
     password: '',
     role: 'CUSTOMER'
   })
+
+  // Pre-select role from query params if available
+  useEffect(() => {
+    if (searchParams) {
+      const roleParam = searchParams.get('role')
+      if (roleParam && ['CUSTOMER', 'PHOTOGRAPHER', 'ADMIN'].includes(roleParam)) {
+        setFormData(prev => ({ ...prev, role: roleParam }))
+      }
+    }
+  }, [searchParams])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
@@ -57,7 +68,11 @@ export default function Register() {
       })
 
       if (!signInResult?.error) {
-        router.push('/')
+        // Redirect based on role
+        const redirectPath = formData.role === 'PHOTOGRAPHER' 
+          ? '/photographer/dashboard' 
+          : '/'
+        router.push(redirectPath)
         router.refresh()
       }
     } catch (err) {

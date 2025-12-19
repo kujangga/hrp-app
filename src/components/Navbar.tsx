@@ -5,7 +5,9 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import { ShoppingCart } from 'lucide-react'
 import NotificationBell from '@/components/NotificationBell'
+import { useBooking } from '@/contexts/BookingContext'
 
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
@@ -17,9 +19,11 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   const { data: session } = useSession()
+  const { getItemCount } = useBooking()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
+  const cartItemCount = getItemCount()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -43,11 +47,10 @@ export default function Navbar() {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className={`fixed top-0 z-50 w-full transition-all duration-300 ${
-        scrolled
-          ? 'border-b border-white/10 bg-gradient-to-b from-[#0f1924] to-[#0a1219] shadow-lg shadow-black/20'
-          : 'bg-transparent'
-      }`}
+      className={`fixed top-0 z-50 w-full transition-all duration-300 ${scrolled
+        ? 'border-b border-white/10 bg-gradient-to-b from-[#0f1924] to-[#0a1219] shadow-lg shadow-black/20'
+        : 'bg-transparent'
+        }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
         {/* Logo */}
@@ -88,11 +91,10 @@ export default function Navbar() {
               >
                 <Link
                   href={href}
-                  className={`relative px-4 py-2 text-[13px] font-medium tracking-wide transition-all ${
-                    isActive
-                      ? 'text-white'
-                      : 'text-white/60 hover:text-white'
-                  }`}
+                  className={`relative px-4 py-2 text-[13px] font-medium tracking-wide transition-all ${isActive
+                    ? 'text-white'
+                    : 'text-white/60 hover:text-white'
+                    }`}
                 >
                   {label}
                   {isActive && (
@@ -118,6 +120,26 @@ export default function Navbar() {
           {session ? (
             <>
               <NotificationBell />
+              {/* Cart Icon */}
+              <Link href="/booking/cart" className="relative">
+                <motion.div
+                  className="relative rounded-full p-2 transition-colors hover:bg-white/5"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <ShoppingCart className="h-5 w-5 text-white/90" />
+                  {cartItemCount > 0 && (
+                    <motion.span
+                      className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-[#7D97B6] to-[#546079] text-[10px] font-bold text-white shadow-lg"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: 'spring', stiffness: 500, damping: 15 }}
+                    >
+                      {cartItemCount}
+                    </motion.span>
+                  )}
+                </motion.div>
+              </Link>
               <motion.div
                 className="flex items-center gap-3"
                 whileHover={{ scale: 1.05 }}
@@ -139,23 +161,35 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link
-                  href="/auth/signin"
-                  className="rounded-full px-5 py-2 text-sm font-medium text-white/90 transition-all hover:text-white"
+              {/* Cart Icon for Guests */}
+              <Link href="/booking/cart" className="relative">
+                <motion.div
+                  className="relative rounded-full p-2 transition-colors hover:bg-white/5"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
                 >
-                  Sign in
-                </Link>
-              </motion.div>
+                  <ShoppingCart className="h-5 w-5 text-white/90" />
+                  {cartItemCount > 0 && (
+                    <motion.span
+                      className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-[#7D97B6] to-[#546079] text-[10px] font-bold text-white shadow-lg"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: 'spring', stiffness: 500, damping: 15 }}
+                    >
+                      {cartItemCount}
+                    </motion.span>
+                  )}
+                </motion.div>
+              </Link>
               <motion.div
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <Link
-                  href="/auth/register"
+                  href="/auth/signin"
                   className="group relative overflow-hidden rounded-full bg-gradient-to-r from-[#7D97B6] to-[#546079] px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-[#7D97B6]/25 transition-all hover:shadow-xl hover:shadow-[#7D97B6]/40"
                 >
-                  <span className="relative z-10">Get Started</span>
+                  <span className="relative z-10">Vendor Portal</span>
                   <motion.span
                     className="absolute inset-0 -z-10 bg-gradient-to-r from-[#E1E7F2] to-[#7D97B6]"
                     initial={{ opacity: 0 }}
@@ -238,11 +272,10 @@ export default function Navbar() {
                         <Link
                           href={href}
                           onClick={() => setMobileMenuOpen(false)}
-                          className={`flex items-center rounded-xl px-4 py-3 text-sm font-medium transition-all ${
-                            isActive
-                              ? 'bg-white/10 text-white'
-                              : 'text-white/60 hover:bg-white/5 hover:text-white'
-                          }`}
+                          className={`flex items-center rounded-xl px-4 py-3 text-sm font-medium transition-all ${isActive
+                            ? 'bg-white/10 text-white'
+                            : 'text-white/60 hover:bg-white/5 hover:text-white'
+                            }`}
                         >
                           {label}
                         </Link>
@@ -264,6 +297,22 @@ export default function Navbar() {
                       </div>
                       <span className="text-sm font-medium text-white">{session.user?.name}</span>
                     </div>
+                    {/* Cart Icon Mobile */}
+                    <Link
+                      href="/booking/cart"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-white/90 transition-all hover:bg-white/5"
+                    >
+                      <div className="flex items-center gap-2">
+                        <ShoppingCart className="h-5 w-5" />
+                        <span>Shopping Cart</span>
+                      </div>
+                      {cartItemCount > 0 && (
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-[#7D97B6] to-[#546079] text-xs font-bold text-white">
+                          {cartItemCount}
+                        </span>
+                      )}
+                    </Link>
                     <motion.button
                       onClick={() => {
                         setMobileMenuOpen(false)

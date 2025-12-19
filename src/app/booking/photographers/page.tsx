@@ -3,6 +3,9 @@
 import RoleBasedLayout from '@/components/RoleBasedLayout'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
+import { COLORS } from '@/lib/colors'
+import { Camera, Star, Award, ShoppingCart, ArrowRight, Filter, DollarSign, CheckCircle2 } from 'lucide-react'
 
 export default function SelectPhotographers() {
   const router = useRouter()
@@ -62,9 +65,9 @@ export default function SelectPhotographers() {
   }
 
   const togglePhotographerSelection = (id: string) => {
-    setSelectedPhotographers(prev => 
-      prev.includes(id) 
-        ? prev.filter(photographerId => photographerId !== id) 
+    setSelectedPhotographers(prev =>
+      prev.includes(id)
+        ? prev.filter(photographerId => photographerId !== id)
         : [...prev, id]
     )
   }
@@ -83,179 +86,338 @@ export default function SelectPhotographers() {
     return true
   })
 
+  const bookingSteps = [
+    { number: 1, title: 'Location & Date', active: false },
+    { number: 2, title: 'Select Photographer', active: true },
+    { number: 3, title: 'Review & Payment', active: false }
+  ]
+
   return (
-    <RoleBasedLayout allowedRoles={['CUSTOMER']}>
-      <div className="min-h-screen bg-gray-100">
-        <header className="bg-white shadow">
-          <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            <h1 className="text-3xl font-bold text-gray-900">Select Photographers</h1>
-          </div>
-        </header>
-        <main>
-          <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            <div className="px-4 py-6 sm:px-0">
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                {/* Filters sidebar */}
-                <div className="lg:col-span-1">
-                  <div className="bg-white shadow rounded-lg p-4">
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Filters</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <label htmlFor="grade" className="block text-sm font-medium text-gray-700">
-                          Grade
-                        </label>
-                        <select
-                          id="grade"
-                          name="grade"
-                          value={filters.grade}
-                          onChange={handleFilterChange}
-                          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                        >
-                          <option value="">All Grades</option>
-                          <option value="A">A (Premium)</option>
-                          <option value="B">B (High)</option>
-                          <option value="C">C (Mid)</option>
-                          <option value="D">D (Mid)</option>
-                          <option value="E">E (Entry)</option>
-                        </select>
-                      </div>
+    <RoleBasedLayout allowedRoles={['CUSTOMER']} allowGuest={true}>
+      <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#0a1219] via-[#0f1924] to-[#162533]">
+        {/* Animated Gradient Orbs */}
+        <div className="absolute inset-0 overflow-hidden">
+          <motion.div
+            className="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-[#7D97B6]/10 blur-3xl"
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.3, 0.5, 0.3],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.div
+            className="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-[#E1E7F2]/5 blur-3xl"
+            animate={{
+              scale: [1.2, 1, 1.2],
+              opacity: [0.2, 0.4, 0.2],
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+        </div>
 
-                      <div>
-                        <label htmlFor="minPrice" className="block text-sm font-medium text-gray-700">
-                          Min Price (IDR)
-                        </label>
-                        <input
-                          type="number"
-                          name="minPrice"
-                          id="minPrice"
-                          value={filters.minPrice}
-                          onChange={handleFilterChange}
-                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        />
-                      </div>
+        {/* Main Content */}
+        <div className="relative min-h-screen px-4 py-12 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
 
-                      <div>
-                        <label htmlFor="maxPrice" className="block text-sm font-medium text-gray-700">
-                          Max Price (IDR)
-                        </label>
-                        <input
-                          type="number"
-                          name="maxPrice"
-                          id="maxPrice"
-                          value={filters.maxPrice}
-                          onChange={handleFilterChange}
-                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        />
-                      </div>
+            {/* Header */}
+            <motion.div
+              className="mb-8 text-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <h1 className="mb-3 text-[clamp(2rem,4vw,3rem)] font-bold text-white">
+                Select Your Photographer
+              </h1>
+              <p className="text-lg text-white/70">
+                Browse professional photographers available for your shoot
+              </p>
+            </motion.div>
+
+            {/* Progress Steps */}
+            <motion.div
+              className="mb-12 flex items-center justify-center gap-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
+              {bookingSteps.map((step, index) => (
+                <div key={step.number} className="flex items-center">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`flex h-10 w-10 items-center justify-center rounded-full ${step.active
+                          ? 'bg-[#7D97B6] text-white'
+                          : 'bg-white/10 text-white/50'
+                        }`}
+                    >
+                      {step.active ? (
+                        <span className="font-semibold">{step.number}</span>
+                      ) : (
+                        <CheckCircle2 className="h-5 w-5" />
+                      )}
+                    </div>
+                    <span
+                      className={`hidden text-sm font-medium sm:block ${step.active ? 'text-white' : 'text-white/50'
+                        }`}
+                    >
+                      {step.title}
+                    </span>
+                  </div>
+                  {index < bookingSteps.length - 1 && (
+                    <div className="mx-4 h-0.5 w-12 bg-white/20" />
+                  )}
+                </div>
+              ))}
+            </motion.div>
+
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
+              {/* Filters Sidebar */}
+              <motion.div
+                className="lg:col-span-1"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <div className="rounded-2xl border border-white/10 bg-white/95 p-6 shadow-xl backdrop-blur-xl">
+                  <div className="mb-6 flex items-center gap-2">
+                    <Filter className="h-5 w-5" style={{ color: COLORS.BLUE_LIGHT }} />
+                    <h3 className="text-lg font-bold" style={{ color: COLORS.NAVY_DARK }}>
+                      Filters
+                    </h3>
+                  </div>
+                  <div className="space-y-6">
+                    <div>
+                      <label
+                        htmlFor="grade"
+                        className="mb-2 flex items-center gap-2 text-sm font-semibold"
+                        style={{ color: COLORS.NAVY_DARK }}
+                      >
+                        <Award className="h-4 w-4" />
+                        Grade
+                      </label>
+                      <select
+                        id="grade"
+                        name="grade"
+                        value={filters.grade}
+                        onChange={handleFilterChange}
+                        className="block w-full rounded-xl border-2 border-gray-200 bg-white px-3 py-3 text-sm transition-all duration-200 focus:border-[#7D97B6] focus:outline-none focus:ring-4 focus:ring-[#7D97B6]/20"
+                        style={{ color: COLORS.NAVY_DARK }}
+                      >
+                        <option value="">All Grades</option>
+                        <option value="A">A (Premium)</option>
+                        <option value="B">B (High)</option>
+                        <option value="C">C (Mid)</option>
+                        <option value="D">D (Mid)</option>
+                        <option value="E">E (Entry)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="minPrice"
+                        className="mb-2 flex items-center gap-2 text-sm font-semibold"
+                        style={{ color: COLORS.NAVY_DARK }}
+                      >
+                        <DollarSign className="h-4 w-4" />
+                        Min Price (IDR)
+                      </label>
+                      <input
+                        type="number"
+                        name="minPrice"
+                        id="minPrice"
+                        value={filters.minPrice}
+                        onChange={handleFilterChange}
+                        placeholder="e.g. 1000000"
+                        className="block w-full rounded-xl border-2 border-gray-200 bg-white px-3 py-3 text-sm transition-all duration-200 focus:border-[#7D97B6] focus:outline-none focus:ring-4 focus:ring-[#7D97B6]/20"
+                        style={{ color: COLORS.NAVY_DARK }}
+                      />
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="maxPrice"
+                        className="mb-2 flex items-center gap-2 text-sm font-semibold"
+                        style={{ color: COLORS.NAVY_DARK }}
+                      >
+                        <DollarSign className="h-4 w-4" />
+                        Max Price (IDR)
+                      </label>
+                      <input
+                        type="number"
+                        name="maxPrice"
+                        id="maxPrice"
+                        value={filters.maxPrice}
+                        onChange={handleFilterChange}
+                        placeholder="e.g. 5000000"
+                        className="block w-full rounded-xl border-2 border-gray-200 bg-white px-3 py-3 text-sm transition-all duration-200 focus:border-[#7D97B6] focus:outline-none focus:ring-4 focus:ring-[#7D97B6]/20"
+                        style={{ color: COLORS.NAVY_DARK }}
+                      />
+                    </div>
+
+                    <div className="rounded-xl bg-blue-50 p-4">
+                      <p className="text-xs text-blue-900">
+                        <strong>Tip:</strong> Use filters to find photographers that match your budget and quality expectations.
+                      </p>
                     </div>
                   </div>
                 </div>
+              </motion.div>
 
-                {/* Photographers grid */}
-                <div className="lg:col-span-3">
-                  <div className="bg-white shadow overflow-hidden sm:rounded-md">
-                    <ul className="divide-y divide-gray-200">
-                      {filteredPhotographers.map((photographer) => (
-                        <li key={photographer.id}>
-                          <div className="px-4 py-4 sm:px-6">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center">
-                                <img
-                                  className="h-16 w-16 rounded-full"
-                                  src={photographer.profilePic}
-                                  alt={photographer.name}
-                                />
-                                <div className="ml-4">
-                                  <div className="flex items-center">
-                                    <h3 className="text-lg font-medium text-indigo-600">{photographer.name}</h3>
-                                    <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                                      Grade {photographer.grade}
-                                    </span>
-                                  </div>
-                                  <p className="text-sm text-gray-500 mt-1">{photographer.bio}</p>
-                                  <div className="flex items-center mt-1">
-                                    <div className="flex text-yellow-400">
-                                      {[...Array(5)].map((_, i) => (
-                                        <svg
-                                          key={i}
-                                          className={`h-4 w-4 ${i < Math.floor(photographer.rating) ? 'text-yellow-400' : 'text-gray-300'}`}
-                                          xmlns="http://www.w3.org/2000/svg"
-                                          viewBox="0 0 20 20"
-                                          fill="currentColor"
-                                        >
-                                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                        </svg>
-                                      ))}
-                                    </div>
-                                    <span className="ml-1 text-sm text-gray-500">{photographer.rating}</span>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="flex flex-col items-end">
-                                <p className="text-lg font-medium text-gray-900">
-                                  Rp {photographer.dailyRate.toLocaleString()}
-                                </p>
-                                <p className="text-sm text-gray-500">per day</p>
-                                <button
-                                  onClick={() => togglePhotographerSelection(photographer.id)}
-                                  className={`mt-2 inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md ${
-                                    selectedPhotographers.includes(photographer.id)
-                                      ? 'bg-red-100 text-red-800 hover:bg-red-200'
-                                      : 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200'
-                                  }`}
+              {/* Photographers Grid */}
+              <motion.div
+                className="lg:col-span-3"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
+                <div className="space-y-6">
+                  {filteredPhotographers.map((photographer, index) => (
+                    <motion.div
+                      key={photographer.id}
+                      className="overflow-hidden rounded-2xl border border-white/10 bg-white/95 shadow-xl backdrop-blur-xl transition-all duration-200 hover:shadow-2xl"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, delay: 0.1 * index }}
+                    >
+                      <div className="p-6">
+                        <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+                          {/* Photographer Info */}
+                          <div className="flex flex-1 gap-4">
+                            <img
+                              className="h-20 w-20 rounded-xl object-cover shadow-md"
+                              src={photographer.profilePic}
+                              alt={photographer.name}
+                            />
+                            <div className="flex-1">
+                              <div className="mb-2 flex flex-wrap items-center gap-2">
+                                <h3 className="text-xl font-bold" style={{ color: COLORS.NAVY_DARK }}>
+                                  {photographer.name}
+                                </h3>
+                                <span
+                                  className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold text-white"
+                                  style={{ backgroundColor: COLORS.BLUE_LIGHT }}
                                 >
-                                  {selectedPhotographers.includes(photographer.id) ? 'Remove' : 'Add to Cart'}
-                                </button>
+                                  <Award className="h-3 w-3" />
+                                  Grade {photographer.grade}
+                                </span>
                               </div>
-                            </div>
-                            
-                            {/* Portfolio preview */}
-                            <div className="mt-4 grid grid-cols-2 gap-2">
-                              {photographer.portfolio.slice(0, 2).map((img, idx) => (
-                                <img
-                                  key={idx}
-                                  className="h-24 w-full object-cover rounded"
-                                  src={img}
-                                  alt={`Portfolio ${idx + 1}`}
-                                />
-                              ))}
+                              <p className="mb-3 text-sm" style={{ color: COLORS.SLATE_MEDIUM }}>
+                                {photographer.bio}
+                              </p>
+                              <div className="flex items-center gap-2">
+                                <div className="flex">
+                                  {[...Array(5)].map((_, i) => (
+                                    <Star
+                                      key={i}
+                                      className={`h-4 w-4 ${i < Math.floor(photographer.rating)
+                                          ? 'fill-yellow-400 text-yellow-400'
+                                          : 'fill-gray-300 text-gray-300'
+                                        }`}
+                                    />
+                                  ))}
+                                </div>
+                                <span className="text-sm font-semibold" style={{ color: COLORS.NAVY_DARK }}>
+                                  {photographer.rating}
+                                </span>
+                              </div>
                             </div>
                           </div>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
 
-                  <div className="mt-6 bg-white shadow sm:rounded-lg">
-                    <div className="px-4 py-5 sm:p-6">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <h3 className="text-lg font-medium text-gray-900">
-                            Selected Photographers ({selectedPhotographers.length})
-                          </h3>
-                          <p className="mt-1 text-sm text-gray-500">
-                            Proceed to cart to review your selections
-                          </p>
+                          {/* Price & Action */}
+                          <div className="flex flex-col items-end gap-3">
+                            <div className="text-right">
+                              <p className="text-2xl font-bold" style={{ color: COLORS.NAVY_DARK }}>
+                                Rp {photographer.dailyRate.toLocaleString()}
+                              </p>
+                              <p className="text-sm" style={{ color: COLORS.SLATE_MEDIUM }}>
+                                per day
+                              </p>
+                            </div>
+                            <motion.button
+                              onClick={() => togglePhotographerSelection(photographer.id)}
+                              className={`flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold shadow-md transition-all duration-200 ${selectedPhotographers.includes(photographer.id)
+                                  ? 'bg-red-500 text-white hover:bg-red-600'
+                                  : 'bg-[#7D97B6] text-white hover:bg-[#6a8399]'
+                                }`}
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                            >
+                              <ShoppingCart className="h-4 w-4" />
+                              {selectedPhotographers.includes(photographer.id) ? 'Remove' : 'Add to Cart'}
+                            </motion.button>
+                          </div>
                         </div>
+
+                        {/* Portfolio Preview */}
+                        <div className="mt-6 grid grid-cols-2 gap-3">
+                          {photographer.portfolio.slice(0, 2).map((img, idx) => (
+                            <img
+                              key={idx}
+                              className="h-32 w-full rounded-xl object-cover shadow-md"
+                              src={img}
+                              alt={`Portfolio ${idx + 1}`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Cart Summary */}
+                <motion.div
+                  className="mt-8 overflow-hidden rounded-2xl border border-white/10 bg-white/95 shadow-xl backdrop-blur-xl"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.5 }}
+                >
+                  <div className="p-6">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <h3 className="mb-1 text-xl font-bold" style={{ color: COLORS.NAVY_DARK }}>
+                          Selected Photographers ({selectedPhotographers.length})
+                        </h3>
+                        <p className="text-sm" style={{ color: COLORS.SLATE_MEDIUM }}>
+                          Proceed to cart to review your selections
+                        </p>
+                      </div>
+                      <div className="flex gap-3">
                         <button
+                          onClick={() => router.back()}
+                          className="rounded-xl border-2 border-gray-300 px-6 py-3 font-semibold transition-all duration-200 hover:border-gray-400"
+                          style={{ color: COLORS.NAVY_DARK }}
+                        >
+                          ← Back
+                        </button>
+                        <motion.button
                           onClick={handleSubmit}
                           disabled={selectedPhotographers.length === 0}
-                          className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
-                            selectedPhotographers.length === 0
-                              ? 'bg-gray-400 cursor-not-allowed'
-                              : 'bg-indigo-600 hover:bg-indigo-700'
-                          }`}
+                          className={`flex items-center gap-2 rounded-xl px-6 py-3 font-semibold text-white shadow-lg transition-all duration-200 ${selectedPhotographers.length === 0
+                              ? 'cursor-not-allowed bg-gray-400'
+                              : 'bg-[#7D97B6] hover:bg-[#6a8399] hover:shadow-xl'
+                            }`}
+                          whileHover={selectedPhotographers.length > 0 ? { scale: 1.02 } : {}}
+                          whileTap={selectedPhotographers.length > 0 ? { scale: 0.98 } : {}}
                         >
                           Next: Review Cart
-                        </button>
+                          <ArrowRight className="h-5 w-5" />
+                        </motion.button>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
             </div>
           </div>
-        </main>
+        </div>
       </div>
     </RoleBasedLayout>
   )
