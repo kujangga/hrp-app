@@ -22,8 +22,14 @@ export default function Navbar() {
   const { getItemCount } = useBooking()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
   const pathname = usePathname()
   const cartItemCount = getItemCount()
+
+  // Prevent hydration mismatch by only showing count after client mount
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -128,7 +134,7 @@ export default function Navbar() {
                   whileTap={{ scale: 0.9 }}
                 >
                   <ShoppingCart className="h-5 w-5 text-white/90" />
-                  {cartItemCount > 0 && (
+                  {isMounted && cartItemCount > 0 && (
                     <motion.span
                       className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-[#7D97B6] to-[#546079] text-[10px] font-bold text-white shadow-lg"
                       initial={{ scale: 0 }}
@@ -169,7 +175,7 @@ export default function Navbar() {
                   whileTap={{ scale: 0.9 }}
                 >
                   <ShoppingCart className="h-5 w-5 text-white/90" />
-                  {cartItemCount > 0 && (
+                  {isMounted && cartItemCount > 0 && (
                     <motion.span
                       className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-[#7D97B6] to-[#546079] text-[10px] font-bold text-white shadow-lg"
                       initial={{ scale: 0 }}
@@ -307,7 +313,7 @@ export default function Navbar() {
                         <ShoppingCart className="h-5 w-5" />
                         <span>Shopping Cart</span>
                       </div>
-                      {cartItemCount > 0 && (
+                      {isMounted && cartItemCount > 0 && (
                         <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-[#7D97B6] to-[#546079] text-xs font-bold text-white">
                           {cartItemCount}
                         </span>
