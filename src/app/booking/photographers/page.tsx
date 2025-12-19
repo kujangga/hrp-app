@@ -1,20 +1,28 @@
 'use client'
 
 import RoleBasedLayout from '@/components/RoleBasedLayout'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import BookingSteps from '@/components/BookingSteps'
+import { useEffect } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { COLORS } from '@/lib/colors'
-import { Camera, Star, Award, ShoppingCart, ArrowRight, Filter, DollarSign, CheckCircle2 } from 'lucide-react'
+import { Camera, Star, Award, ShoppingCart, ArrowRight, Filter, DollarSign, CheckCircle2, X } from 'lucide-react'
+import { useBooking } from '@/contexts/BookingContext'
+import { useState } from 'react'
 
 export default function SelectPhotographers() {
   const router = useRouter()
-  const [selectedPhotographers, setSelectedPhotographers] = useState<string[]>([])
+  const pathname = usePathname()
+  const { booking, addItem, removeItem, getItemsByType, getNextStep } = useBooking()
+
   const [filters, setFilters] = useState({
     grade: '',
     minPrice: '',
     maxPrice: ''
   })
+
+  // Get selected photographers from context
+  const selectedPhotographers = getItemsByType('photographer')
 
   // Mock data for photographers
   const photographers = [
@@ -26,10 +34,9 @@ export default function SelectPhotographers() {
       profilePic: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80',
       bio: 'Specializing in wedding and corporate photography with 10+ years of experience.',
       rating: 4.9,
-      portfolio: [
-        'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80',
-        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80'
-      ]
+      completedProjects: 250,
+      features: ['10+ Years Experience', 'Full HD Equipment', 'Same-Day Edits', 'Drone Coverage'],
+      description: 'Award-winning wedding photographer specializing in romantic and candid moments.'
     },
     {
       id: '2',
@@ -39,10 +46,9 @@ export default function SelectPhotographers() {
       profilePic: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80',
       bio: 'Creative photographer specializing in lifestyle and portrait photography.',
       rating: 4.7,
-      portfolio: [
-        'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80',
-        'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80'
-      ]
+      completedProjects: 180,
+      features: ['Studio Photography', 'Outdoor Sessions', 'Professional Lighting', 'Retouching Included'],
+      description: 'Professional portrait photographer with expertise in corporate and personal branding.'
     },
     {
       id: '3',
@@ -52,10 +58,9 @@ export default function SelectPhotographers() {
       profilePic: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80',
       bio: 'Experienced photographer with a focus on events and documentation.',
       rating: 4.5,
-      portfolio: [
-        'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80',
-        'https://images.unsplash.com/photo-1507101105822-7472b28e22ac?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80'
-      ]
+      completedProjects: 150,
+      features: ['Event Coverage', 'Fast Delivery', 'Professional Equipment', 'Flexible Packages'],
+      description: 'Experienced photographer with a focus on events and documentation.'
     }
   ]
 
@@ -64,18 +69,38 @@ export default function SelectPhotographers() {
     setFilters(prev => ({ ...prev, [name]: value }))
   }
 
-  const togglePhotographerSelection = (id: string) => {
-    setSelectedPhotographers(prev =>
-      prev.includes(id)
-        ? prev.filter(photographerId => photographerId !== id)
-        : [...prev, id]
-    )
+  const isSelected = (id: string) => {
+    return selectedPhotographers.some(p => p.id === id)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // In a real app, this would save selections and proceed to next step
-    router.push('/booking/cart')
+  const togglePhotographerSelection = (photographer: typeof photographers[0]) => {
+    if (isSelected(photographer.id)) {
+      removeItem(photographer.id, 'photographer')
+    } else {
+      addItem({
+        id: photographer.id,
+        type: 'photographer',
+        name: photographer.name,
+        dailyRate: photographer.dailyRate,
+        grade: photographer.grade,
+        profilePic: photographer.profilePic,
+        quantity: 1
+      })
+    }
+  }
+
+  const handleContinue = () => {
+    const nextStep = getNextStep(pathname || '/booking/photographers')
+    if (nextStep) {
+      router.push(nextStep.path)
+    }
+  }
+
+  const handleSkip = () => {
+    const nextStep = getNextStep(pathname || '/booking/photographers')
+    if (nextStep) {
+      router.push(nextStep.path)
+    }
   }
 
   // Apply filters
@@ -85,12 +110,6 @@ export default function SelectPhotographers() {
     if (filters.maxPrice && photographer.dailyRate > parseInt(filters.maxPrice)) return false
     return true
   })
-
-  const bookingSteps = [
-    { number: 1, title: 'Location & Date', active: false },
-    { number: 2, title: 'Select Photographer', active: true },
-    { number: 3, title: 'Review & Payment', active: false }
-  ]
 
   return (
     <RoleBasedLayout allowedRoles={['CUSTOMER']} allowGuest={true}>
@@ -140,43 +159,17 @@ export default function SelectPhotographers() {
               <p className="text-lg text-white/70">
                 Browse professional photographers available for your shoot
               </p>
+              {booking.location && booking.date && (
+                <div className="mt-3 flex items-center justify-center gap-4 text-sm text-white/60">
+                  <span>📍 {booking.location}</span>
+                  <span>•</span>
+                  <span>📅 {booking.date}</span>
+                </div>
+              )}
             </motion.div>
 
             {/* Progress Steps */}
-            <motion.div
-              className="mb-12 flex items-center justify-center gap-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-            >
-              {bookingSteps.map((step, index) => (
-                <div key={step.number} className="flex items-center">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`flex h-10 w-10 items-center justify-center rounded-full ${step.active
-                          ? 'bg-[#7D97B6] text-white'
-                          : 'bg-white/10 text-white/50'
-                        }`}
-                    >
-                      {step.active ? (
-                        <span className="font-semibold">{step.number}</span>
-                      ) : (
-                        <CheckCircle2 className="h-5 w-5" />
-                      )}
-                    </div>
-                    <span
-                      className={`hidden text-sm font-medium sm:block ${step.active ? 'text-white' : 'text-white/50'
-                        }`}
-                    >
-                      {step.title}
-                    </span>
-                  </div>
-                  {index < bookingSteps.length - 1 && (
-                    <div className="mx-4 h-0.5 w-12 bg-white/20" />
-                  )}
-                </div>
-              ))}
-            </motion.div>
+            <BookingSteps />
 
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
               {/* Filters Sidebar */}
@@ -318,8 +311,8 @@ export default function SelectPhotographers() {
                                     <Star
                                       key={i}
                                       className={`h-4 w-4 ${i < Math.floor(photographer.rating)
-                                          ? 'fill-yellow-400 text-yellow-400'
-                                          : 'fill-gray-300 text-gray-300'
+                                        ? 'fill-yellow-400 text-yellow-400'
+                                        : 'fill-gray-300 text-gray-300'
                                         }`}
                                     />
                                   ))}
@@ -342,29 +335,40 @@ export default function SelectPhotographers() {
                               </p>
                             </div>
                             <motion.button
-                              onClick={() => togglePhotographerSelection(photographer.id)}
-                              className={`flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold shadow-md transition-all duration-200 ${selectedPhotographers.includes(photographer.id)
-                                  ? 'bg-red-500 text-white hover:bg-red-600'
-                                  : 'bg-[#7D97B6] text-white hover:bg-[#6a8399]'
+                              onClick={() => togglePhotographerSelection(photographer)}
+                              className={`flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold shadow-md transition-all duration-200 ${isSelected(photographer.id)
+                                ? 'bg-red-500 text-white hover:bg-red-600'
+                                : 'bg-[#7D97B6] text-white hover:bg-[#6a8399]'
                                 }`}
                               whileHover={{ scale: 1.05 }}
                               whileTap={{ scale: 0.95 }}
                             >
-                              <ShoppingCart className="h-4 w-4" />
-                              {selectedPhotographers.includes(photographer.id) ? 'Remove' : 'Add to Cart'}
+                              {isSelected(photographer.id) ? (
+                                <>
+                                  <X className="h-4 w-4" />
+                                  Remove
+                                </>
+                              ) : (
+                                <>
+                                  <ShoppingCart className="h-4 w-4" />
+                                  Add to Cart
+                                </>
+                              )}
                             </motion.button>
                           </div>
                         </div>
 
                         {/* Portfolio Preview */}
                         <div className="mt-6 grid grid-cols-2 gap-3">
-                          {photographer.portfolio.slice(0, 2).map((img, idx) => (
-                            <img
+                          {photographer.features.slice(0, 4).map((feature, idx) => (
+                            <div
                               key={idx}
-                              className="h-32 w-full rounded-xl object-cover shadow-md"
-                              src={img}
-                              alt={`Portfolio ${idx + 1}`}
-                            />
+                              className="flex items-center gap-2 text-xs"
+                              style={{ color: COLORS.SLATE_MEDIUM }}
+                            >
+                              <CheckCircle2 className="h-3 w-3" style={{ color: COLORS.BLUE_LIGHT }} />
+                              {feature}
+                            </div>
                           ))}
                         </div>
                       </div>
@@ -386,7 +390,10 @@ export default function SelectPhotographers() {
                           Selected Photographers ({selectedPhotographers.length})
                         </h3>
                         <p className="text-sm" style={{ color: COLORS.SLATE_MEDIUM }}>
-                          Proceed to cart to review your selections
+                          {selectedPhotographers.length > 0
+                            ? 'Continue to next step or add more photographers'
+                            : 'Select photographers to continue or skip this step'
+                          }
                         </p>
                       </div>
                       <div className="flex gap-3">
@@ -397,17 +404,28 @@ export default function SelectPhotographers() {
                         >
                           ← Back
                         </button>
+                        {selectedPhotographers.length === 0 && (
+                          <motion.button
+                            onClick={handleSkip}
+                            className="rounded-xl border-2 border-gray-300 px-6 py-3 font-semibold transition-all duration-200 hover:border-gray-400"
+                            style={{ color: COLORS.NAVY_DARK }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            Skip
+                          </motion.button>
+                        )}
                         <motion.button
-                          onClick={handleSubmit}
+                          onClick={handleContinue}
                           disabled={selectedPhotographers.length === 0}
                           className={`flex items-center gap-2 rounded-xl px-6 py-3 font-semibold text-white shadow-lg transition-all duration-200 ${selectedPhotographers.length === 0
-                              ? 'cursor-not-allowed bg-gray-400'
-                              : 'bg-[#7D97B6] hover:bg-[#6a8399] hover:shadow-xl'
+                            ? 'cursor-not-allowed bg-gray-400'
+                            : 'bg-[#7D97B6] hover:bg-[#6a8399] hover:shadow-xl'
                             }`}
                           whileHover={selectedPhotographers.length > 0 ? { scale: 1.02 } : {}}
                           whileTap={selectedPhotographers.length > 0 ? { scale: 0.98 } : {}}
                         >
-                          Next: Review Cart
+                          Next Step
                           <ArrowRight className="h-5 w-5" />
                         </motion.button>
                       </div>

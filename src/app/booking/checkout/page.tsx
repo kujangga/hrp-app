@@ -352,6 +352,12 @@ export default function BookingCheckout() {
                         </span>
                       </div>
                       <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <span className="text-sm font-medium text-gray-600">Rental Duration</span>
+                        <span className="text-sm font-semibold" style={{ color: COLORS.NAVY_DARK }}>
+                          {booking.rentalDays} {booking.rentalDays === 1 ? 'day' : 'days'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between border-b border-gray-200 pb-2">
                         <span className="text-sm font-medium text-gray-600">Total Items</span>
                         <span className="text-sm font-semibold" style={{ color: COLORS.NAVY_DARK }}>
                           {booking.items.length} items
@@ -472,8 +478,8 @@ export default function BookingCheckout() {
                         type="submit"
                         disabled={isProcessing}
                         className={`flex w-full items-center justify-center gap-2 rounded-xl py-4 font-semibold text-white shadow-lg transition-all ${isProcessing
-                            ? 'cursor-not-allowed bg-gray-400'
-                            : 'hover:shadow-xl'
+                          ? 'cursor-not-allowed bg-gray-400'
+                          : 'hover:shadow-xl'
                           }`}
                         style={{ backgroundColor: isProcessing ? undefined : COLORS.BLUE_LIGHT }}
                         whileHover={!isProcessing ? { scale: 1.02 } : {}}

@@ -4,14 +4,14 @@ import RoleBasedLayout from '@/components/RoleBasedLayout'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { COLORS } from '@/lib/colors'
-import { Camera, Package, Truck, CreditCard, ArrowRight, CheckCircle2, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react'
+import { Camera, Package, Truck, CreditCard, ArrowRight, CheckCircle2, Minus, Plus, Trash2, ShoppingBag, Calendar } from 'lucide-react'
 import { useBooking } from '@/contexts/BookingContext'
 import { useState } from 'react'
 import CartConfirmDialog from '@/components/CartConfirmDialog'
 
 export default function BookingCart() {
   const router = useRouter()
-  const { booking, removeItem, updateItemQuantity, clearItems, getTotalCost, getItemsByType, getBookingSteps } = useBooking()
+  const { booking, removeItem, updateItemQuantity, clearItems, getTotalCost, getItemsByType, getBookingSteps, setRentalDays } = useBooking()
 
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean
@@ -29,10 +29,12 @@ export default function BookingCart() {
   const equipment = getItemsByType('equipment')
   const transport = getItemsByType('transport')
 
-  const photographerTotal = photographers.reduce((sum, p) => sum + p.dailyRate, 0)
-  const videographerTotal = videographers.reduce((sum, v) => sum + v.dailyRate, 0)
-  const equipmentTotal = equipment.reduce((sum, item) => sum + (item.dailyRate * (item.quantity || 1)), 0)
-  const transportTotal = transport.reduce((sum, item) => sum + (item.dailyRate * (item.quantity || 1)), 0)
+  const rentalDays = booking.rentalDays || 1
+
+  const photographerTotal = photographers.reduce((sum, p) => sum + (p.dailyRate * rentalDays), 0)
+  const videographerTotal = videographers.reduce((sum, v) => sum + (v.dailyRate * rentalDays), 0)
+  const equipmentTotal = equipment.reduce((sum, item) => sum + (item.dailyRate * (item.quantity || 1) * rentalDays), 0)
+  const transportTotal = transport.reduce((sum, item) => sum + (item.dailyRate * (item.quantity || 1) * rentalDays), 0)
   const grandTotal = getTotalCost()
 
   const hasItems = booking.items.length > 0
@@ -496,91 +498,159 @@ export default function BookingCart() {
                   )}
                 </div>
 
-                {/* Order Summary */}
+                {/* Rental Duration Selector */}
                 <motion.div
                   className="lg:col-span-1"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: 0.5 }}
+                  transition={{ duration: 0.6, delay: 0.45 }}
                 >
-                  <div className="sticky top-8 overflow-hidden rounded-2xl border border-white/10 bg-white/95 shadow-xl backdrop-blur-xl">
-                    <div className="p-6">
-                      <div className="mb-6 flex items-center gap-2">
-                        <CreditCard className="h-6 w-6" style={{ color: COLORS.BLUE_LIGHT }} />
-                        <h3 className="text-xl font-bold" style={{ color: COLORS.NAVY_DARK }}>
-                          Order Summary
-                        </h3>
-                      </div>
-                      <div className="space-y-4">
-                        {photographers.length > 0 && (
-                          <div className="flex justify-between">
-                            <span className="font-medium text-gray-600">Photographers</span>
-                            <span className="font-semibold" style={{ color: COLORS.NAVY_DARK }}>
-                              Rp {photographerTotal.toLocaleString()}
-                            </span>
+                  <div className="sticky top-8 space-y-6">
+                    {/* Duration Card */}
+                    <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/95 shadow-xl backdrop-blur-xl">
+                      <div className="p-6">
+                        <div className="mb-4 flex items-center gap-2">
+                          <Calendar className="h-6 w-6" style={{ color: COLORS.BLUE_LIGHT }} />
+                          <h3 className="text-xl font-bold" style={{ color: COLORS.NAVY_DARK }}>
+                            Rental Duration
+                          </h3>
+                        </div>
+                        <div className="space-y-3">
+                          <p className="text-sm text-gray-600">
+                            How many days do you need these services?
+                          </p>
+                          <div className="flex items-center gap-3">
+                            <button
+                              onClick={() => setRentalDays(Math.max(1, rentalDays - 1))}
+                              className="rounded-lg bg-gray-100 p-3 transition-colors hover:bg-gray-200"
+                              disabled={rentalDays <= 1}
+                            >
+                              <Minus className="h-5 w-5 text-gray-600" />
+                            </button>
+                            <div className="flex-1 text-center">
+                              <div className="text-3xl font-bold" style={{ color: COLORS.NAVY_DARK }}>
+                                {rentalDays}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                {rentalDays === 1 ? 'day' : 'days'}
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => setRentalDays(rentalDays + 1)}
+                              className="rounded-lg bg-gray-100 p-3 transition-colors hover:bg-gray-200"
+                            >
+                              <Plus className="h-5 w-5 text-gray-600" />
+                            </button>
                           </div>
-                        )}
-                        {videographers.length > 0 && (
-                          <div className="flex justify-between">
-                            <span className="font-medium text-gray-600">Videographers</span>
-                            <span className="font-semibold" style={{ color: COLORS.NAVY_DARK }}>
-                              Rp {videographerTotal.toLocaleString()}
-                            </span>
-                          </div>
-                        )}
-                        {equipment.length > 0 && (
-                          <div className="flex justify-between">
-                            <span className="font-medium text-gray-600">Equipment</span>
-                            <span className="font-semibold" style={{ color: COLORS.NAVY_DARK }}>
-                              Rp {equipmentTotal.toLocaleString()}
-                            </span>
-                          </div>
-                        )}
-                        {transport.length > 0 && (
-                          <div className="flex justify-between">
-                            <span className="font-medium text-gray-600">Transportation</span>
-                            <span className="font-semibold" style={{ color: COLORS.NAVY_DARK }}>
-                              Rp {transportTotal.toLocaleString()}
-                            </span>
-                          </div>
-                        )}
-                        <div className="border-t-2 border-gray-200 pt-4">
-                          <div className="flex justify-between">
-                            <span className="text-xl font-bold" style={{ color: COLORS.NAVY_DARK }}>
-                              Total
-                            </span>
-                            <span className="text-2xl font-bold" style={{ color: COLORS.BLUE_LIGHT }}>
-                              Rp {grandTotal.toLocaleString()}
-                            </span>
+                          <div className="rounded-lg bg-blue-50 p-3">
+                            <p className="text-xs text-blue-900">
+                              <strong>Note:</strong> All prices will be calculated based on the rental duration.
+                            </p>
                           </div>
                         </div>
                       </div>
-                      <div className="mt-8 space-y-3">
-                        <motion.button
-                          onClick={handleCheckout}
-                          className="flex w-full items-center justify-center gap-2 rounded-xl py-4 font-semibold text-white shadow-lg transition-all duration-200 hover:shadow-xl"
-                          style={{ backgroundColor: COLORS.BLUE_LIGHT }}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          Proceed to Checkout
-                          <ArrowRight className="h-5 w-5" />
-                        </motion.button>
-                        <button
-                          onClick={() => router.back()}
-                          className="w-full rounded-xl border-2 border-gray-300 py-3 font-semibold transition-all duration-200 hover:border-gray-400"
-                          style={{ color: COLORS.NAVY_DARK }}
-                        >
-                          ← Continue Shopping
-                        </button>
-                        <motion.button
-                          onClick={handleClearCart}
-                          className="w-full rounded-xl border-2 border-red-300 py-3 font-semibold text-red-600 transition-all duration-200 hover:border-red-400 hover:bg-red-50"
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          Clear Cart
-                        </motion.button>
+                    </div>
+
+                    {/* Order Summary */}
+                    <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/95 shadow-xl backdrop-blur-xl">
+                      <div className="p-6">
+                        <div className="mb-6 flex items-center gap-2">
+                          <CreditCard className="h-6 w-6" style={{ color: COLORS.BLUE_LIGHT }} />
+                          <h3 className="text-xl font-bold" style={{ color: COLORS.NAVY_DARK }}>
+                            Order Summary
+                          </h3>
+                        </div>
+                        <div className="space-y-4">
+                          {photographers.length > 0 && (
+                            <div className="space-y-1">
+                              <div className="flex justify-between">
+                                <span className="font-medium text-gray-600">Photographers</span>
+                                <span className="font-semibold" style={{ color: COLORS.NAVY_DARK }}>
+                                  Rp {photographerTotal.toLocaleString()}
+                                </span>
+                              </div>
+                              <div className="text-xs text-gray-500 text-right">
+                                {photographers.reduce((sum, p) => sum + p.dailyRate, 0).toLocaleString()} × {rentalDays} day{rentalDays > 1 ? 's' : ''}
+                              </div>
+                            </div>
+                          )}
+                          {videographers.length > 0 && (
+                            <div className="space-y-1">
+                              <div className="flex justify-between">
+                                <span className="font-medium text-gray-600">Videographers</span>
+                                <span className="font-semibold" style={{ color: COLORS.NAVY_DARK }}>
+                                  Rp {videographerTotal.toLocaleString()}
+                                </span>
+                              </div>
+                              <div className="text-xs text-gray-500 text-right">
+                                {videographers.reduce((sum, v) => sum + v.dailyRate, 0).toLocaleString()} × {rentalDays} day{rentalDays > 1 ? 's' : ''}
+                              </div>
+                            </div>
+                          )}
+                          {equipment.length > 0 && (
+                            <div className="space-y-1">
+                              <div className="flex justify-between">
+                                <span className="font-medium text-gray-600">Equipment</span>
+                                <span className="font-semibold" style={{ color: COLORS.NAVY_DARK }}>
+                                  Rp {equipmentTotal.toLocaleString()}
+                                </span>
+                              </div>
+                              <div className="text-xs text-gray-500 text-right">
+                                {equipment.reduce((sum, item) => sum + (item.dailyRate * (item.quantity || 1)), 0).toLocaleString()} × {rentalDays} day{rentalDays > 1 ? 's' : ''}
+                              </div>
+                            </div>
+                          )}
+                          {transport.length > 0 && (
+                            <div className="space-y-1">
+                              <div className="flex justify-between">
+                                <span className="font-medium text-gray-600">Transportation</span>
+                                <span className="font-semibold" style={{ color: COLORS.NAVY_DARK }}>
+                                  Rp {transportTotal.toLocaleString()}
+                                </span>
+                              </div>
+                              <div className="text-xs text-gray-500 text-right">
+                                {transport.reduce((sum, item) => sum + (item.dailyRate * (item.quantity || 1)), 0).toLocaleString()} × {rentalDays} day{rentalDays > 1 ? 's' : ''}
+                              </div>
+                            </div>
+                          )}
+                          <div className="border-t-2 border-gray-200 pt-4">
+                            <div className="flex justify-between">
+                              <span className="text-xl font-bold" style={{ color: COLORS.NAVY_DARK }}>
+                                Total
+                              </span>
+                              <span className="text-2xl font-bold" style={{ color: COLORS.BLUE_LIGHT }}>
+                                Rp {grandTotal.toLocaleString()}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="mt-8 space-y-3">
+                          <motion.button
+                            onClick={handleCheckout}
+                            className="flex w-full items-center justify-center gap-2 rounded-xl py-4 font-semibold text-white shadow-lg transition-all duration-200 hover:shadow-xl"
+                            style={{ backgroundColor: COLORS.BLUE_LIGHT }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            Proceed to Checkout
+                            <ArrowRight className="h-5 w-5" />
+                          </motion.button>
+                          <button
+                            onClick={() => router.back()}
+                            className="w-full rounded-xl border-2 border-gray-300 py-3 font-semibold transition-all duration-200 hover:border-gray-400"
+                            style={{ color: COLORS.NAVY_DARK }}
+                          >
+                            ← Continue Shopping
+                          </button>
+                          <motion.button
+                            onClick={handleClearCart}
+                            className="w-full rounded-xl border-2 border-red-300 py-3 font-semibold text-red-600 transition-all duration-200 hover:border-red-400 hover:bg-red-50"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            Clear Cart
+                          </motion.button>
+                        </div>
                       </div>
                     </div>
                   </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react'
+import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react'
 
 export type BookingType = 'full' | 'photographer' | 'videographer' | 'equipment' | 'transport'
 
@@ -11,6 +11,7 @@ export interface BookingItem {
   dailyRate: number
   quantity?: number
   grade?: string
+  profilePic?: string
   [key: string]: any
 }
 
@@ -19,20 +20,27 @@ interface BookingState {
   location: string
   date: string
   items: BookingItem[]
+  rentalDays: number
+  skippedServices: string[]
 }
 
 interface BookingContextType {
   booking: BookingState
   setBookingType: (type: BookingType) => void
   setLocationAndDate: (location: string, date: string) => void
+  setRentalDays: (days: number) => void
   addItem: (item: BookingItem) => void
   removeItem: (id: string, type: string) => void
   updateItemQuantity: (id: string, type: string, quantity: number) => void
   clearItems: (type?: string) => void
+  clearCart: () => void
+  skipService: (serviceType: string) => void
   getTotalCost: () => number
   getItemsByType: (type: string) => BookingItem[]
   getItemCount: () => number
   getBookingSteps: () => BookingStep[]
+  getNextStep: (currentPath: string) => BookingStep | null
+  getPreviousStep: (currentPath: string) => BookingStep | null
 }
 
 export interface BookingStep {
@@ -44,13 +52,58 @@ export interface BookingStep {
 
 const BookingContext = createContext<BookingContextType | undefined>(undefined)
 
-export function BookingProvider({ children }: { children: ReactNode }) {
-  const [booking, setBooking] = useState<BookingState>({
+const STORAGE_KEY = 'hrp_booking_cart'
+
+// Load initial state from localStorage
+const loadInitialState = (): BookingState => {
+  if (typeof window === 'undefined') {
+    return {
+      bookingType: 'full',
+      location: '',
+      date: '',
+      items: [],
+      rentalDays: 1,
+      skippedServices: []
+    }
+  }
+
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (stored) {
+      const parsed = JSON.parse(stored)
+      return {
+        ...parsed,
+        rentalDays: parsed.rentalDays || 1,
+        skippedServices: parsed.skippedServices || []
+      }
+    }
+  } catch (error) {
+    console.error('Failed to load booking state from localStorage:', error)
+  }
+
+  return {
     bookingType: 'full',
     location: '',
     date: '',
-    items: []
-  })
+    items: [],
+    rentalDays: 1,
+    skippedServices: []
+  }
+}
+
+export function BookingProvider({ children }: { children: ReactNode }) {
+  const [booking, setBooking] = useState<BookingState>(loadInitialState)
+
+  // Auto-save to localStorage whenever booking state changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(booking))
+      } catch (error) {
+        console.error('Failed to save booking state to localStorage:', error)
+      }
+    }
+  }, [booking])
 
   const setBookingType = useCallback((type: BookingType) => {
     setBooking(prev => ({ ...prev, bookingType: type }))
@@ -58,6 +111,11 @@ export function BookingProvider({ children }: { children: ReactNode }) {
 
   const setLocationAndDate = useCallback((location: string, date: string) => {
     setBooking(prev => ({ ...prev, location, date }))
+  }, [])
+
+  const setRentalDays = useCallback((days: number) => {
+    if (days < 1) return
+    setBooking(prev => ({ ...prev, rentalDays: days }))
   }, [])
 
   const addItem = useCallback((item: BookingItem) => {
@@ -73,8 +131,12 @@ export function BookingProvider({ children }: { children: ReactNode }) {
         newItems[existingIndex] = item
         return { ...prev, items: newItems }
       } else {
-        // Add new item
-        return { ...prev, items: [...prev.items, item] }
+        // Add new item and remove from skipped services
+        return {
+          ...prev,
+          items: [...prev.items, item],
+          skippedServices: prev.skippedServices.filter(s => s !== item.type)
+        }
       }
     })
   }, [])
@@ -107,12 +169,39 @@ export function BookingProvider({ children }: { children: ReactNode }) {
     }))
   }, [])
 
+  const clearCart = useCallback(() => {
+    setBooking({
+      bookingType: 'full',
+      location: '',
+      date: '',
+      items: [],
+      rentalDays: 1,
+      skippedServices: []
+    })
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(STORAGE_KEY)
+    }
+  }, [])
+
+  const skipService = useCallback((serviceType: string) => {
+    setBooking(prev => {
+      if (!prev.skippedServices.includes(serviceType)) {
+        return {
+          ...prev,
+          skippedServices: [...prev.skippedServices, serviceType]
+        }
+      }
+      return prev
+    })
+  }, [])
+
   const getTotalCost = useCallback(() => {
     return booking.items.reduce((total, item) => {
       const quantity = item.quantity || 1
-      return total + (item.dailyRate * quantity)
+      const days = booking.rentalDays
+      return total + (item.dailyRate * quantity * days)
     }, 0)
-  }, [booking.items])
+  }, [booking.items, booking.rentalDays])
 
   const getItemsByType = useCallback((type: string) => {
     return booking.items.filter(item => item.type === type)
@@ -132,24 +221,85 @@ export function BookingProvider({ children }: { children: ReactNode }) {
       }
     ]
 
-    // Currently only photographers booking route exists
-    // For all booking types, go to photographers then cart
-    steps.push({
-      number: 2,
-      title: 'Select Services',
-      path: '/booking/photographers',
-      type: 'photographer'
-    })
+    // Add service selection steps based on booking type
+    if (booking.bookingType === 'full') {
+      steps.push({
+        number: 2,
+        title: 'Photographers',
+        path: '/booking/photographers',
+        type: 'photographer'
+      })
+      steps.push({
+        number: 3,
+        title: 'Videographers',
+        path: '/booking/videographers',
+        type: 'videographer'
+      })
+      steps.push({
+        number: 4,
+        title: 'Equipment',
+        path: '/booking/equipment',
+        type: 'equipment'
+      })
+      steps.push({
+        number: 5,
+        title: 'Transportation',
+        path: '/booking/transportation',
+        type: 'transport'
+      })
+      steps.push({
+        number: 6,
+        title: 'Review & Payment',
+        path: '/booking/cart',
+        type: 'cart'
+      })
+    } else {
+      // Single service type booking
+      const serviceMap = {
+        photographer: { title: 'Photographers', path: '/booking/photographers' },
+        videographer: { title: 'Videographers', path: '/booking/videographers' },
+        equipment: { title: 'Equipment', path: '/booking/equipment' },
+        transport: { title: 'Transportation', path: '/booking/transportation' }
+      }
 
-    steps.push({
-      number: 3,
-      title: 'Review & Payment',
-      path: '/booking/cart',
-      type: 'cart'
-    })
+      const service = serviceMap[booking.bookingType as keyof typeof serviceMap]
+      if (service) {
+        steps.push({
+          number: 2,
+          title: service.title,
+          path: service.path,
+          type: booking.bookingType as any
+        })
+      }
+
+      steps.push({
+        number: 3,
+        title: 'Review & Payment',
+        path: '/booking/cart',
+        type: 'cart'
+      })
+    }
 
     return steps
   }, [booking.bookingType])
+
+  const getNextStep = useCallback((currentPath: string): BookingStep | null => {
+    const steps = getBookingSteps()
+    const currentIndex = steps.findIndex(step => currentPath.includes(step.path))
+    if (currentIndex >= 0 && currentIndex < steps.length - 1) {
+      return steps[currentIndex + 1]
+    }
+    return null
+  }, [getBookingSteps])
+
+  const getPreviousStep = useCallback((currentPath: string): BookingStep | null => {
+    const steps = getBookingSteps()
+    const currentIndex = steps.findIndex(step => currentPath.includes(step.path))
+    if (currentIndex > 0) {
+      return steps[currentIndex - 1]
+    }
+    return null
+  }, [getBookingSteps])
 
   return (
     <BookingContext.Provider
@@ -157,14 +307,19 @@ export function BookingProvider({ children }: { children: ReactNode }) {
         booking,
         setBookingType,
         setLocationAndDate,
+        setRentalDays,
         addItem,
         removeItem,
         updateItemQuantity,
         clearItems,
+        clearCart,
+        skipService,
         getTotalCost,
         getItemsByType,
         getItemCount,
-        getBookingSteps
+        getBookingSteps,
+        getNextStep,
+        getPreviousStep
       }}
     >
       {children}
